@@ -32,6 +32,8 @@ export enum EnviromentVariablesEnum {
     AWS_SECRET_ACCESS_KEY = 'AWS_SECRET_ACCESS_KEY',
     S3_BUCKET = 'S3_BUCKET',
 
+
+
     GECKO_API = 'GECKO_API',
 
     SWAP_WALLET = 'SWAP_WALLET',

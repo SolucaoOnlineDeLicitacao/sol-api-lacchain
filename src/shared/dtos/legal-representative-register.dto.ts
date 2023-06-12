@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MaritalStatusEnum } from 'src/modules/wallet/enums/marital-status.enum';
+import { MaritalStatusEnum } from 'src/modules/SOL/enums/marital-status.enum';
 import { AddressRegisterDto } from './address-register.dto';
 
 export class LegalRepresentativeRegisterDto {

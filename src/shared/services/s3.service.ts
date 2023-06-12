@@ -21,10 +21,13 @@ export class S3Service {
     }
 
     async upload(key: string, base64File: String) {
+        console.log('a chave', key)
 
         const S3_BUCKET = await this.configService.get(EnviromentVariablesEnum.S3_BUCKET);
+        console.log('bucket', S3_BUCKET)
 
         const pos = base64File.indexOf(';base64,');
+        console.log('pos', pos)
         const type = base64File.substring(5, pos);
         var b64 = base64File.substr(pos + 8);
 

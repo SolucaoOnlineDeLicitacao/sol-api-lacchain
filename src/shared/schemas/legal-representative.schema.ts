@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Address, AddressSchema } from './address.schema';
-import { MaritalStatusEnum } from 'src/modules/wallet/enums/marital-status.enum';
+import { MaritalStatusEnum } from 'src/modules/SOL/enums/marital-status.enum';
 
 @Schema({ _id: false })
 export class LegalRepresentative {

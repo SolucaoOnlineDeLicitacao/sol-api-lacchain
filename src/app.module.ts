@@ -1,10 +1,9 @@
-import { LacchainModule } from './modules/lacchain/lacchain.module';
+
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { configuration } from 'config/env/configuration';
-import { AsaasModule } from './modules/asaas/asaas.module';
-import { WalletModule } from './modules/wallet/wallet.module';
+import { SolModule } from './modules/SOL/sol.module';
 
 @Module({
   imports: [
@@ -16,8 +15,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
       load: [configuration],
     }),
     ScheduleModule.forRoot(),
-    WalletModule,
-    LacchainModule
+    SolModule,
   ],
   controllers: [],
   providers: [],

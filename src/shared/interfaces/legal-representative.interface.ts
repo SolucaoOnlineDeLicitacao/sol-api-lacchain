@@ -1,4 +1,4 @@
-import { MaritalStatusEnum } from "src/modules/wallet/enums/marital-status.enum";
+import { MaritalStatusEnum } from "src/modules/SOL/enums/marital-status.enum";
 import { AddressInterface } from "./address.interface";
 
 export interface LegalRepresentativeInterface {
