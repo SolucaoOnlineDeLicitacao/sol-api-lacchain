@@ -12,6 +12,8 @@ import { BidUpdateStatusRequestDto } from "../dtos/bid-update-status-request.dto
 import { S3Repository } from "../repositories/s3.repository";
 import { S3Service } from "src/shared/services/s3.service";
 import { BidAddProposalDto } from "../dtos/bid-add-proposal.dto";
+import { AllotmentRepository } from "../repositories/allotment.repository";
+import { AllotmentModel } from "../models/allotment.model";
 
 @Injectable()
 export class BidService {
@@ -21,10 +23,12 @@ export class BidService {
     constructor(
         private readonly _bidsRepository: BidRepository,
         private readonly _userRepository: UserRepository,
-        private readonly _s3Repository: S3Repository
+        private readonly _s3Repository: S3Repository,
+        private readonly _allotmentRepository: AllotmentRepository,
     ) { }
 
- 
+  // id do lote 6483a37834bb517ca485a388
+  // id do bid 6483a37834bb517ca485a38a
 
     async register(associationId: string, dto: BideRegisterDto): Promise<BidModel> {
         const numberOfBids = await this._bidsRepository.list()
@@ -38,6 +42,11 @@ export class BidService {
         dto.association = association;
 
         dto.bid_count = (Number(numberOfBids.length) + 1).toString()
+   
+        
+       dto.add_allotment = await this._allotmentRepository.register(dto.add_allotment)
+      
+
         const result = await this._bidsRepository.register(dto);
         if (!result)
             throw new BadRequestException('Não foi possivel cadastrar essa licitação!');
@@ -48,6 +57,11 @@ export class BidService {
 
     async list(): Promise<BidModel[]> {
         const result = await this._bidsRepository.list();
+        return result;
+    }
+
+    async listAllotmentBydBidId(_id: string): Promise<any> {
+        const result = await this._bidsRepository.listAllotmentByBidId(_id);
         return result;
     }
 

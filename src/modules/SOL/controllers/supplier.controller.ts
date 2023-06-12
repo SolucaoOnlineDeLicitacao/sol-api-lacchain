@@ -50,8 +50,8 @@ export class SupplierController {
 
     @Get('list')
     @HttpCode(200)
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    // @UseGuards(JwtAuthGuard)
+    // @ApiBearerAuth()
     async list() {
 
         try {
@@ -77,8 +77,8 @@ export class SupplierController {
 
     @Get('get-by-id/:_id')
     @HttpCode(200)
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    // @UseGuards(JwtAuthGuard)
+    // @ApiBearerAuth()
     async getById(
         @Param('_id') _id: string,
     ) {

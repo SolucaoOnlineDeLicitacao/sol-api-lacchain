@@ -60,11 +60,11 @@ export class Bids {
     @Prop({ required: false, type: Array })
     invited_suppliers: string[];
 
-    @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: User.name })
-    association: User;
+    // @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: User.name })
+    // association: User;
 
-    @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: User.name })
-    proofreader: User;
+    // @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: User.name })
+    // proofreader: User;
 
 }
 

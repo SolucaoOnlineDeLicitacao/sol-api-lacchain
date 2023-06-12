@@ -77,6 +77,7 @@ export class TfaService {
         return new AuthenticateResponseDto(
             dto.user.email,
             dto.user.name,
+            dto.user.id,
             accessToken.accessToken,
             refreshToken.accessToken,
             dto.user.wallet.address,
@@ -118,6 +119,7 @@ export class TfaService {
         return new AuthenticateResponseDto(
             dto.user.email,
             dto.user.name,
+            dto.user.id,
             accessToken.accessToken,
             refreshToken.accessToken,
             dto.user.wallet.address,

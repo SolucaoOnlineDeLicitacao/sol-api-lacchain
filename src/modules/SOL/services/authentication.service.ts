@@ -124,6 +124,7 @@ export class AuthenticationService {
     return new AuthenticateResponseDto(
       user.email,
       user.name,
+      user.id,
       accessToken.accessToken,
       refreshToken.accessToken,
       user.wallet.address,

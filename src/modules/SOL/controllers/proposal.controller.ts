@@ -59,8 +59,8 @@ export class ProposalController {
 
     @Get('list')
     @HttpCode(200)
-    @UseGuards(JwtAuthGuard, FuncoesGuard)
-    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    // @UseGuards(JwtAuthGuard, FuncoesGuard)
+    // @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
     @ApiBearerAuth()
     async list() {
 

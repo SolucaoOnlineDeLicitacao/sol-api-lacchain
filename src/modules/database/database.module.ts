@@ -20,6 +20,7 @@ import { Contract } from 'ethers';
 import { ContractSchema } from '../SOL/schemas/Contract.schema';
 import { Proposal, ProposaltSchema } from '../SOL/schemas/proposal.schema';
 import { WorkPlan, WorkPlanSchema } from "../SOL/schemas/work-plan.schema";
+import { Allotment, AllotmentSchema } from "../SOL/schemas/allotment.schema";
 
 
 @Module({
@@ -49,7 +50,7 @@ import { WorkPlan, WorkPlanSchema } from "../SOL/schemas/work-plan.schema";
       { name: Contract.name, schema: ContractSchema },
       { name: Proposal.name, schema: ProposaltSchema },
       { name: WorkPlan.name, schema: WorkPlanSchema },
-
+      { name: Allotment.name, schema: AllotmentSchema },
     ]),
   ],
   exports: [

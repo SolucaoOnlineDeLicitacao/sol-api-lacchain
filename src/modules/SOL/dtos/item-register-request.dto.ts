@@ -12,6 +12,6 @@ export abstract class ItemRequestDto {
     @ApiProperty({ type: String })
     quantity: string;
 
-    @ApiProperty({ type: String })
-    files: string[];
+    // @ApiProperty({ type: String })
+    // files: string[];
 }

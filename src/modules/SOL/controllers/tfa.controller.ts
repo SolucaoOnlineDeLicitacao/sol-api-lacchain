@@ -179,6 +179,7 @@ export class TfaController {
           new AuthenticateResponseDto(
             user.email,
             user.name,
+            user.id,
             accessToken.accessToken,
             refreshToken.accessToken,
             user.wallet.address,

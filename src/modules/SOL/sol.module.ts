@@ -61,7 +61,9 @@ import { WorkPlanRepository } from './repositories/work-plan.repository';
 import { WorkPlanService } from './services/work-plan.service';
 import { AgreementService } from './services/agreement.service';
 import { WorkPlanController } from './controllers/work-plan.controle';
-
+import { AllotmentRepository } from './repositories/allotment.repository';
+import { AllotmentService } from './services/allotment.service';
+import { AllotmentController } from './controllers/allotment.controller';
 @Module({
     imports: [
         PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -100,7 +102,7 @@ import { WorkPlanController } from './controllers/work-plan.controle';
         ProposalController,
         AgreementController,
         WorkPlanController,
- 
+        AllotmentController
     ],
     providers: [
         JwtStrategy,
@@ -144,7 +146,8 @@ import { WorkPlanController } from './controllers/work-plan.controle';
         AgreementService,
         AgreementRepository,
 
-   
+        AllotmentService,
+        AllotmentRepository
     ],
     exports: [
         AuthenticationService,

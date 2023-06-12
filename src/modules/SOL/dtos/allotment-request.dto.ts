@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { LegalRepresentativeRegisterDto } from "src/shared/dtos/legal-representative-register.dto";
 import { ItemRequestDto } from "./item-register-request.dto";
+import { ProposalRegisterDto } from "./proposal-register-request.dto";
 
 export abstract class AllotmentRequestDto {
     
@@ -20,5 +21,8 @@ export abstract class AllotmentRequestDto {
     files: string;
 
     @ApiProperty({ type: ItemRequestDto })
-    add_item: ItemRequestDto;
+    add_item: ItemRequestDto[];
+
+    @ApiProperty({ type: ProposalRegisterDto })
+    proposals: ProposalRegisterDto[];
 }

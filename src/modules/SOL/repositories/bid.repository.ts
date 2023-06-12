@@ -9,6 +9,7 @@ import { BideRegisterDto } from "../dtos/bid-register-request.dto";
 import { BidUpdateDto } from "../dtos/bid-update-request.dto";
 import { BidUpdateStatusRequestDto } from "../dtos/bid-update-status-request.dto";
 import { BidAddProposalDto } from "../dtos/bid-add-proposal.dto";
+import { Allotment } from "../schemas/allotment.schema";
 
 @Injectable()
 export class BidRepository {
@@ -18,7 +19,9 @@ export class BidRepository {
     ) { }
 
     async register(dto: BideRegisterDto): Promise<any> {
+        
         const data = await new this._model(dto);
+        console.log('venho aqui?', data)
         return data.save();
     }
 
@@ -57,6 +60,10 @@ export class BidRepository {
                
             }
         }, { new: true });
+    }
+
+    async listAllotmentByBidId(_id: string, ): Promise<any[]> {
+        return (await this._model.find({_id}))
     }
 
     async listNonDeletedBids(): Promise<BidModel[]> {

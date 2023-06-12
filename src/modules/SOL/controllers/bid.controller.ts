@@ -37,12 +37,12 @@ export class BidController {
 
         try {
 
-            console.log(dto);
+            console.log('bati aqui', dto);
 
             const payload: JwtPayload = request.user;
 
             const response = await this.bidsService.register(payload.userId, dto);
-
+           
             return new ResponseDto(
                 true,
                 response,
@@ -99,6 +99,35 @@ export class BidController {
         try {
 
             const response = await this.bidsService.getById(_id);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Get('teste/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async teste(
+        @Param('_id') _id: string,
+    ) {
+
+        try {
+
+            const response = await this.bidsService.listAllotmentBydBidId(_id);
 
             return new ResponseDto(
                 true,
