@@ -17,7 +17,7 @@ import { Products, ProductsSchema } from '../SOL/schemas/product.schema';
 import { Category, CategorySchema } from '../SOL/schemas/category.schema';
 import { Supplier, SupplierSchema } from '../SOL/schemas/supplier.schema';
 import { Contract } from 'ethers';
-import { ContractSchema } from '../SOL/schemas/Contract.schema';
+import { ContractSchema } from '../SOL/schemas/contract.schema';
 import { Proposal, ProposaltSchema } from '../SOL/schemas/proposal.schema';
 import { WorkPlan, WorkPlanSchema } from "../SOL/schemas/work-plan.schema";
 import { Allotment, AllotmentSchema } from "../SOL/schemas/allotment.schema";
