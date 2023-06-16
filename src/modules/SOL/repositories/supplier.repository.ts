@@ -1,14 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-
-import { UserModel } from "../models/user.model";
-
 import { Supplier } from "../schemas/supplier.schema";
 import { SupplierModel } from "../models/supplier.model";
 import { SupplierRegisterDto } from "../dtos/supplier-register-request.dto";
 import { SupplierUpdateStatusDto } from "../dtos/supplier-update-status-request.dto";
 import { SupplierGroupIdUpdateDto } from "../dtos/supplier-group-id-update.dto";
+import { NotificationInterface } from "../interfaces/notification.interface";
 
 @Injectable()
 export class SupplierRepository {
@@ -23,24 +21,25 @@ export class SupplierRepository {
     }
 
     async list(): Promise<SupplierModel[]> {
-        const data = await  this._model.find();
+        const data = await  this._model.find().populate('categories');
        return data
     }
 
     async listById(_id: string): Promise<SupplierModel> {
-        const data = await  this._model.findOne({_id});
+        const data = await  this._model.findOne({_id}).populate('categories');
        return data
     }
 
-    async findByIdAndUpdate(_id: string, dto: SupplierRegisterDto): Promise<SupplierModel> {
-        const data = await  this._model.findByIdAndUpdate({_id}, {$set: {
-            name: dto.name,
-            cpf: dto.cpf,
-            type: dto.type,
-            address: dto.address,
-            legal_representative: dto.legal_representative,
+    async updateNotifications(_id: string, dto: NotificationInterface): Promise<SupplierModel> {
+        return await this._model.findOneAndUpdate({ _id }, {
+            $push: {
+                notification_list: dto
+            }
+        });
+    }
 
-        } }, { new: true });
+    async findByIdAndUpdate(_id: string, dto: SupplierRegisterDto): Promise<SupplierModel> {
+        const data = await  this._model.findByIdAndUpdate({_id}, {$set: dto}, { new: true });
        return data
     }
 
@@ -69,9 +68,7 @@ export class SupplierRepository {
        return data
     }
 
-   
     async deleteById(_id: string) {
         return await this._model.findOneAndDelete({ _id });
     }
-
 }

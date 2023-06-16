@@ -1,8 +1,8 @@
 export enum ProposalStatusEnum {
-
-    aceita = 'aceita',
-    recusada = 'recusada',
-    aguardando = 'aguardando'
-
-
+    aceitoRevisor = 'aceitoRevisor',
+    aceitoAssociacao = 'aceitoAssociacao',
+    recusadaRevisor = 'recusadaRevisor',
+    recusadaAssociacao = 'recusadaAssociacao',
+    aguardando1 = 'aguardando1',
+    aguardando2 = 'aguardando2'
 }

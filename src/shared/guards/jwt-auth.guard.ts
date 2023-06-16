@@ -10,7 +10,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     handleRequest(err, user, info) {
-       // console.log('vindo aqui', user)
         
         if (err || !user)
 

@@ -1,17 +1,33 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { ContractStatusEnum } from "../enums/contract-status.enum";
+import { User } from "./user.schema";
+import mongoose from "mongoose";
+import { Bids } from "./bids.schema";
+import { boolean } from "yargs";
 
 @Schema({ timestamps: true, collection: Contract.name.toLowerCase() })
 export class Contract {
 
-    @Prop({ required: true, type: String })
+    @Prop({ type: Number, default: 0 })
+    sequencial_number: number;
+
+    @Prop({ type: String })
     contract_number: string;
 
-    @Prop({ required: true, type: String })
-    bid_number: string;
+    @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: Bids.name })
+    bid_number: Bids;
 
-    @Prop({ required: true, type: String })
-    supplier_id: string;
+    @Prop({ required: true, type:Boolean })
+    association_accept: boolean;
+
+    @Prop({ required: true, type:Boolean })
+    supplier_accept: boolean;
+
+    @Prop({ required: false, type: String })
+    association_sign_date: string;
+
+    @Prop({ required: false, type: String })
+    supplier_sign_date: string;
 
     @Prop({ required: true, type: String })
     contract_document: string;
@@ -22,11 +38,17 @@ export class Contract {
     @Prop({ required: false, type: Boolean, default: false })
     deleted: boolean;
 
-    @Prop({ required: true, enum: Object.keys(ContractStatusEnum), default:ContractStatusEnum.aguardando_assinaturas })
+    @Prop({ required: true, enum: Object.keys(ContractStatusEnum), default: ContractStatusEnum.aguardando_assinaturas })
     status: ContractStatusEnum;
 
     @Prop({ required: true, type: Array })
     proposal_id: string[];
+
+    @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: User.name })
+    supplier_id: User;
+
+    @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: User.name })
+    association_id: User;
 
 }
 

@@ -31,16 +31,28 @@ export class GroupService {
     }
 
     async updateName(_id: string, dto: GroupUpdatenameDto): Promise<GroupModel> {
+        const item = await this._groupRepository.getById(_id);
+        if (!item) {
+            throw new BadRequestException('Grupo não encontrado!');
+        }
         const result = await this._groupRepository.updateName(_id, dto);
         return result;
       }
 
       async addItem(_id: string, dto: GroupAddItemsRequestDto): Promise<GroupModel> {
+        const item = await this._groupRepository.getById(_id);
+        if (!item) {
+            throw new BadRequestException('Grupo não encontrado!');
+        }
         const result = await this._groupRepository.addItem(_id, dto);
         return result;
       }
 
       async removeItem(_id: string, dto: GroupAddItemsRequestDto): Promise<GroupModel> {
+        const item = await this._groupRepository.getById(_id);
+        if (!item) {
+            throw new BadRequestException('Grupo não encontrado!');
+        }
         const result = await this._groupRepository.removeItem(_id, dto);
         return result;
       }
@@ -49,6 +61,10 @@ export class GroupService {
 
     async getById(_id: string): Promise<GroupModel> {
         const result = await this._groupRepository.getById(_id);
+      
+        if (!result) {
+            throw new BadRequestException('Grupo não encontrado!');
+        }
         return result;
     }
 
@@ -58,10 +74,3 @@ export class GroupService {
 
 
 }
-
-
-// Enquanto a situação da licitação está como "Em rascunho" é possível clicar no botão
-// “Editar" para alterar todos os campos, exceto "Tipo de licitação" e "Modalidade", que não
-// podem ser modificados.
-// Além disso, enquanto está sob o status "Em rascunho", a licitação ainda pode ser excluída
-// clicando no botão “Excluir”.

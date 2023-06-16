@@ -1,4 +1,3 @@
-import { WalletModel } from "src/shared/models/wallet.model";
 import { UserStatusEnum } from "../enums/user-status.enum";
 import { UserTypeEnum } from "../enums/user-type.enum";
 import { UserRolesEnum } from "../enums/user-roles.enum";

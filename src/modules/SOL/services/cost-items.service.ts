@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { CostItemsRegisterRequestDto } from "../dtos/cost-items-register-request.dto";
 import { CostItemsModel } from "../models/cost-items.model";
 import { CostItemsRepository } from "../repositories/cost-items.repository";
@@ -19,9 +19,15 @@ export class CostItemsService {
 
     async register(dto: CostItemsRegisterRequestDto): Promise<CostItemsModel> {
         const category = await this._categoryRepository.getById(dto.categoryId);
+        if (!category) {
+            throw new BadRequestException('Categoria não encontrada!');
+        }
         dto.category = category;
 
         const product = await this._productRepository.getById(dto.productId);
+        if (!product) {
+            throw new BadRequestException('Produto não encontrado!');
+        }
         dto.product = product;
         
         const result = await this._constItemsRepository.register(dto);
@@ -40,11 +46,19 @@ export class CostItemsService {
 
     async getById(_id: string): Promise<CostItemsModel> {
         const result = await this._constItemsRepository.getById(_id);
+        if (!result) {
+            throw new BadRequestException('Item não encontrado!');
+        }
         return result;
     }
 
     async update(_id: string, dto: CostItemsUpdateRequestDto): Promise<CostItemsModel[]> {
+        dto.product = await this._productRepository.getById(dto.productId);
+        dto.category = await this._categoryRepository.getById(dto.categoryId);
         const result = await this._constItemsRepository.update(_id, dto);
+        if (!result) {
+            throw new BadRequestException('Item não encontrado!');
+        }
         return result;
     }
 

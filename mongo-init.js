@@ -1,11 +1,11 @@
 db.createUser(
     {
-        user: "user",
-        pwd: "Passw0rd",
+        user: "sol",
+        pwd: "sua senha",
         roles: [
             {
                 role: "readWrite",
-                db: "base"
+                db: "sol-db"
             }
         ]
     }

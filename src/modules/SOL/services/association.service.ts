@@ -17,13 +17,17 @@ export class AssociationService {
 
         const result = await this._associationRepository.register(dto);
         if (!result)
-            throw new BadRequestException('Email não encontrado!');
+            throw new BadRequestException('Não foi possivel criar a associação!');
 
         return result;
 
     }
 
     async update(_id: string, dto: AssociationUpdateRequestDto): Promise<AssociationModel> {
+        const item = await this._associationRepository.getById(_id)
+        if (!item) {
+            throw new BadRequestException('Associação não encontrada!');
+        }    
         const result = await this._associationRepository.update(_id, dto);
         return result;
       }
@@ -35,6 +39,9 @@ export class AssociationService {
 
     async getById(_id: string): Promise<AssociationModel> {
         const result = await this._associationRepository.getById(_id);
+        if (!result) {
+            throw new BadRequestException('Associação não encontrada!');
+        }  
         return result;
     }
 

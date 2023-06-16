@@ -10,6 +10,7 @@ import { UserUpdateRequestDto } from "../dtos/user-update-request.dto";
 import { UserRegisterPasswordRequestDto } from "../dtos/user-register-password-request.dto";
 import { UserTypeEnum } from "../enums/user-type.enum";
 import { UserUpdateByIdRequestDto } from "../dtos/user-update-by-id-request.dto";
+import { NotificationInterface } from "../interfaces/notification.interface";
 
 @Injectable()
 export class UserRepository {
@@ -33,9 +34,15 @@ export class UserRepository {
             .findOne({ document });
     }
 
+    async getAll(): Promise<UserModel[]> {
+        return await this._model
+            .find();
+    }
+
     async getById(_id: string): Promise<UserModel> {
         return await this._model
-            .findOne({ _id }).populate('association');
+            .findById({ _id }).populate('association');
+     
     }
 
     async listByType(type: UserTypeEnum): Promise<UserModel[]> {
@@ -51,6 +58,14 @@ export class UserRepository {
         return await this._model.findOneAndUpdate({ _id }, {
             $set: {
                 password: dto.password
+            }
+        });
+    }
+
+    async updateNotifications(_id: string, dto: NotificationInterface): Promise<UserModel> {
+        return await this._model.findOneAndUpdate({ _id }, {
+            $push: {
+                notification_list: dto
             }
         });
     }

@@ -47,8 +47,8 @@ export class AssociationController {
 
     @Get('list')
     @HttpCode(200)
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     async list() {
 
         try {

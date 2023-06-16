@@ -1,11 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Put, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/shared/guards/jwt-auth.guard";
 import { ResponseDto } from "src/shared/dtos/response.dto";
-import { GroupService } from "../services/group.service";
-import { GroupRegisterDto } from "../dtos/group-register-request.dto";
-import { GroupUpdatenameDto } from "../dtos/group-update-name-request.dto";
-import { GroupAddItemsRequestDto } from "../dtos/group-add-items-request.dto";
 import { ContractService } from "../services/contract.service";
 import { ContractRegisterDto } from "../dtos/contract-register-request.dto";
 import { ContractUpdateDto } from "../dtos/contract-update-request.dto";
@@ -25,9 +21,9 @@ export class ContractController {
 
     @Post('register')
     @HttpCode(201)
-    @UseGuards(JwtAuthGuard, FuncoesGuard)
-    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
-    @ApiBearerAuth()
+    // @UseGuards(JwtAuthGuard, FuncoesGuard)
+    // @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    // @ApiBearerAuth()
     async register(
         @Body() dto: ContractRegisterDto,
     ) {
@@ -138,6 +134,71 @@ export class ContractController {
             );
         }
     }
+
+    @Put('sing-association/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    @ApiBearerAuth()
+    async signAssociation(
+        @Param('_id') _id: string,
+        @Body() dto: ContractUpdateDto,
+    ) {
+
+        try {
+
+            const response = await this.contractService.signAssociation(_id, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+
+
+    @Put('sing-supplier/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.fornecedor)
+    @ApiBearerAuth()
+    async signSupplier(
+        @Param('_id') _id: string,
+        @Body() dto: ContractUpdateDto,
+    ) {
+
+        try {
+
+            const response = await this.contractService.signSupplier(_id, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
 
 
     @Delete('delete-by-id/:_id')

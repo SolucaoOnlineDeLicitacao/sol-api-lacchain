@@ -21,6 +21,8 @@ import { ContractSchema } from '../SOL/schemas/contract.schema';
 import { Proposal, ProposaltSchema } from '../SOL/schemas/proposal.schema';
 import { WorkPlan, WorkPlanSchema } from "../SOL/schemas/work-plan.schema";
 import { Allotment, AllotmentSchema } from "../SOL/schemas/allotment.schema";
+import { ModelContract, ModelContractSchema } from "../SOL/schemas/model-contract.schemay";
+import { Notification, NotificationSchema } from "../SOL/schemas/notification.schema";
 
 
 @Module({
@@ -48,9 +50,11 @@ import { Allotment, AllotmentSchema } from "../SOL/schemas/allotment.schema";
       { name: Category.name, schema: CategorySchema },
       { name: Supplier.name, schema: SupplierSchema },
       { name: Contract.name, schema: ContractSchema },
+      { name: ModelContract.name, schema: ModelContractSchema },
       { name: Proposal.name, schema: ProposaltSchema },
       { name: WorkPlan.name, schema: WorkPlanSchema },
       { name: Allotment.name, schema: AllotmentSchema },
+      { name: Notification.name, schema: NotificationSchema },
     ]),
   ],
   exports: [

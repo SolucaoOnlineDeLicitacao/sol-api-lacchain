@@ -10,12 +10,14 @@ import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
 
-  const keyFileExists = fs.existsSync('./../secrets/walkr-ziwallet.api.key.pem');
-  const certFileExists = fs.existsSync('./../secrets/walkr-ziwallet.api.crt.pem');
+  const enviroment = process.env.NODE_ENV.toUpperCase();
+
+  const keyFileExists = fs.existsSync('./../secrets/sol-app.api.key.pem');
+  const certFileExists = fs.existsSync('./../secrets/sol-app.api.crt.pem');
   const httpsOptions = keyFileExists && certFileExists
     ? {
-      key: fs.readFileSync('./../secrets/walkr-ziwallet.api.key.pem'),
-      cert: fs.readFileSync('./../secrets/walkr-ziwallet.api.crt.pem'),
+      key: fs.readFileSync('./../secrets/sol-app.api.key.pem'),
+      cert: fs.readFileSync('./../secrets/sol-app.api.crt.pem'),
     }
     : null;
 
@@ -30,20 +32,20 @@ async function bootstrap() {
   if (BooleanUtil.getBoolean(configService.get(EnviromentVariablesEnum.ENABLE_CORS))) {
     const corsOptions = {
       origin: '*',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       preflightContinue: false,
       optionsSuccessStatus: 204,
       credentials: true,
-      allowedHeaders: 'Content-Type, Accept, Authorization'
+      allowedHeaders: 'Content-Type, Accept, Authorization, ResponseType'
     };
     app.enableCors(corsOptions);
 
-    logger.debug('CORS ENABLED');
+    logger.debug('* CORS ENABLED');
   }
 
-  if (BooleanUtil.getBoolean(configService.get(EnviromentVariablesEnum.ENABLE_DOCS))) {
+  if (configService.get<boolean>(EnviromentVariablesEnum.ENABLE_DOCS)) {
     const swaggerOptions = new DocumentBuilder()
-      .setTitle('SOL Sistema Online de Licitação - API')
+      .setTitle(`SOL Sistema Online de Licitação - API | ${enviroment}`)
       .setVersion('0.0.1')
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
@@ -53,11 +55,11 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, swaggerOptions);
     SwaggerModule.setup('docs', app, document);
 
-    logger.debug('DOCS ENABLED');
+    logger.debug('* DOCS ENABLED');
   }
 
   const port = configService.get(EnviromentVariablesEnum.PORT) || 3000;
   await app.listen(port);
-  logger.log(`Sol API started at port ${port}`);
+  logger.log(`${enviroment} | Sol API started at port ${port}`);
 }
 bootstrap();

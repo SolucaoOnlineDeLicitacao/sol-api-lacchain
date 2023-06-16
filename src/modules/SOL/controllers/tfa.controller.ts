@@ -35,7 +35,7 @@ export class TfaController {
     private readonly _tfaService: TfaService,
     private readonly _userRepository: UserRepository,
     private readonly authenticationService: AuthenticationService,
-  ) {}
+  ) { }
 
   @Get()
   @HttpCode(200)
@@ -56,24 +56,6 @@ export class TfaController {
     }
   }
 
-  @Post('generate')
-  @HttpCode(200)
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  async generate(@Req() request) {
-    try {
-      const payload: JwtPayload = request.user;
-
-      const response = await this._tfaService.create(payload.email);
-
-      return new ResponseDto(true, response, null);
-    } catch (error) {
-      throw new HttpException(
-        new ResponseDto(false, null, [error.message]),
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
 
   @Post('register')
   @HttpCode(201)
@@ -182,7 +164,6 @@ export class TfaController {
             user.id,
             accessToken.accessToken,
             refreshToken.accessToken,
-            user.wallet.address,
             user.type
           ),
           null,

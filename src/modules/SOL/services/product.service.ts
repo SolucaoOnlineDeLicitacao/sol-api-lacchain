@@ -1,13 +1,4 @@
 import { BadRequestException, Injectable, Logger } from "@nestjs/common";
-import { AssociationRepository } from "../repositories/association.repository";
-import { AssociationRegisterRequestDto } from "../dtos/association-register-request.dto";
-import { AssociationModel } from "../models/association.model";
-import { AssociationUpdateRequestDto } from "../dtos/association-update-request.dto";
-import { BideRegisterDto } from "../dtos/bid-register-request.dto";
-import { BidRepository } from "../repositories/bid.repository";
-import { BidModel } from "../models/bid.model";
-import { BidUpdateDto } from "../dtos/bid-update-request.dto";
-import { UserRepository } from "../repositories/user.repository";
 import { ProductRepository } from "../repositories/product.repository";
 import { ProductRegisterDto } from "../dtos/product-register-request.dto";
 import { ProductModel } from "../models/product.model";
@@ -22,9 +13,6 @@ export class ProductService {
         private readonly _productRepository: ProductRepository,
     
         ) { }
-
-
-      
 
     async register( dto: ProductRegisterDto): Promise<ProductModel> {
  
@@ -50,18 +38,21 @@ export class ProductService {
     }
 
     async update(_id: string, dto: ProductRegisterDto): Promise<ProductModel> {
+        const item = await this._productRepository.getById(_id);
+        if (!item) {
+            throw new BadRequestException('Produto não encontrado!');
+        }
         const result = await this._productRepository.update(_id, dto);
         return result;
     }
 
-
-
     async getById(_id: string): Promise<ProductModel> {
         const result = await this._productRepository.getById(_id);
+        if (!result) {
+            throw new BadRequestException('Grupo não encontrado!');
+        }
         return result;
     }
-
-
 
     async deleteById(_id: string) {
         return await this._productRepository.deleteById(_id);
@@ -69,10 +60,3 @@ export class ProductService {
 
 
 }
-
-
-// Enquanto a situação da licitação está como "Em rascunho" é possível clicar no botão
-// “Editar" para alterar todos os campos, exceto "Tipo de licitação" e "Modalidade", que não
-// podem ser modificados.
-// Além disso, enquanto está sob o status "Em rascunho", a licitação ainda pode ser excluída
-// clicando no botão “Excluir”.

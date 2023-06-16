@@ -1,15 +1,12 @@
 import { Injectable } from "@nestjs/common";
-
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-
 import { Bids } from "../schemas/bids.schema";
 import { BidModel } from "../models/bid.model";
 import { BideRegisterDto } from "../dtos/bid-register-request.dto";
 import { BidUpdateDto } from "../dtos/bid-update-request.dto";
 import { BidUpdateStatusRequestDto } from "../dtos/bid-update-status-request.dto";
 import { BidAddProposalDto } from "../dtos/bid-add-proposal.dto";
-import { Allotment } from "../schemas/allotment.schema";
 
 @Injectable()
 export class BidRepository {
@@ -21,7 +18,6 @@ export class BidRepository {
     async register(dto: BideRegisterDto): Promise<any> {
         
         const data = await new this._model(dto);
-        console.log('venho aqui?', data)
         return data.save();
     }
 
@@ -63,26 +59,28 @@ export class BidRepository {
     }
 
     async listAllotmentByBidId(_id: string, ): Promise<any[]> {
-        return (await this._model.find({_id}))
+        return (await this._model.find({_id}).populate('agreement').populate('invited_suppliers').populate('add_allotment'))
     }
 
     async listNonDeletedBids(): Promise<BidModel[]> {
-        return await this._model.find({ deleted: false });
+        return await this._model.find({ deleted: false }).populate('agreement');
     }
 
     async list(): Promise<BidModel[]> {
-        return await this._model.find()
-
+        return await this._model.find().populate('add_allotment').populate('agreement').populate('invited_suppliers');
     }
 
     async getById(_id: string): Promise<BidModel> {
-        return await this._model.findOne({ _id })
+        return await this._model.findById({_id}).populate('add_allotment').populate('agreement').populate('invited_suppliers');
     }
 
-
+    async getBidById(_id: string): Promise<Bids> {
+        return await this._model.findOne({ _id }).populate('invited_suppliers');
+    }
 
     async deleteById(_id: string) {
-        return await this._model.findByIdAndUpdate({ _id }, { $set: { deleted: true } }, { new: true });
+       return await this._model.findByIdAndUpdate({ _id }, { $set: { deleted: true } }, { new: true });
+      
     }
 
 }

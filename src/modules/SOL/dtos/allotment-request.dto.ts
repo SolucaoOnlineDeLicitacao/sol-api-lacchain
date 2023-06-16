@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { LegalRepresentativeRegisterDto } from "src/shared/dtos/legal-representative-register.dto";
 import { ItemRequestDto } from "./item-register-request.dto";
 import { ProposalRegisterDto } from "./proposal-register-request.dto";
+import { AllotmentStatusEnum } from "../enums/allotment-status.enum";
 
 export abstract class AllotmentRequestDto {
     
@@ -25,4 +26,7 @@ export abstract class AllotmentRequestDto {
 
     @ApiProperty({ type: ProposalRegisterDto })
     proposals: ProposalRegisterDto[];
+
+    @ApiProperty({ enum: AllotmentStatusEnum, type: String })
+    status:AllotmentStatusEnum;
 }

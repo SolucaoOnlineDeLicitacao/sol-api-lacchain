@@ -21,7 +21,5 @@ export interface AgreementInterface {
 export interface WorkPlanInterface {
   name: string;
   product: Array<{ quantity: string; unitValue: number; costItems: CostItemsModel }>;
-  // costItems: CostItemsModel;
-  // quantity: string;
-  // unitValue: number;
+
 }

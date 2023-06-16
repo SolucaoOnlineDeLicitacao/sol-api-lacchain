@@ -7,4 +7,7 @@ export abstract class ContractUpdateDto {
     @ApiProperty({ type: String, enum: ContractStatusEnum })
     status: ContractStatusEnum;
 
+    @ApiProperty({ type: String })
+    association_id: string;
+
 }

@@ -1,6 +1,5 @@
 import { UserTypeEnum } from '../enums/user-type.enum';
 import { ApiProperty } from "@nestjs/swagger";
-import { WalletInterface } from "src/shared/interfaces/wallet.interface";
 import { UserStatusEnum } from "../enums/user-status.enum";
 import { UserRolesEnum } from '../enums/user-roles.enum';
 

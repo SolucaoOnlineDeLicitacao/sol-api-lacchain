@@ -26,7 +26,6 @@ export abstract class PushNotificationTokenRegisterDto {
 
 export abstract class NotificationSubscribeDto {
 
-    // @ApiProperty({ type: PushNotificationTokenRegisterDto })
     @ApiProperty()
     token: string;
 

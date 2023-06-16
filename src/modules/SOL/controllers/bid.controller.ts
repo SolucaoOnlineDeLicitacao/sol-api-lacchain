@@ -1,10 +1,8 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Put, Req, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/shared/guards/jwt-auth.guard";
-import { AssociationRegisterRequestDto } from "../dtos/association-register-request.dto";
 import { ResponseDto } from "src/shared/dtos/response.dto";
 import { UserController } from "./user.controller";
-import { AssociationService } from "../services/association.service";
 import { BideRegisterDto } from "../dtos/bid-register-request.dto";
 import { BidService } from "../services/bid.service";
 import { BidUpdateDto } from "../dtos/bid-update-request.dto";
@@ -37,7 +35,6 @@ export class BidController {
 
         try {
 
-            console.log('bati aqui', dto);
 
             const payload: JwtPayload = request.user;
 
@@ -117,11 +114,11 @@ export class BidController {
         }
     }
 
-    @Get('teste/:_id')
+    @Get('list-allotment-by/:_id')
     @HttpCode(200)
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    async teste(
+    async listAllotmentBydBidId(
         @Param('_id') _id: string,
     ) {
 
@@ -273,5 +270,18 @@ export class BidController {
         }
     }
 
+    @Get("download/:id/:type")
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    async download(@Res() response, @Param("id") id: string, @Param("type") type: string) {
+        try {
+            const result = await this.bidsService.downloadFile(id,type)
+            response.send(result);
+        } catch (error) {
+
+        throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

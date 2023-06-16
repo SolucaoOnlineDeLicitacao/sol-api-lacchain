@@ -3,7 +3,6 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { AgreementRegisterRequestDto } from "../dtos/agreement-register-request.dto";
 import { AgreementModel } from "../models/agreement.model";
-import { UserModel } from "../models/user.model";
 import { Agreement } from "../schemas/agreement.schema";
 
 @Injectable()

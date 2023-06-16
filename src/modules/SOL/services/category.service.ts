@@ -13,9 +13,6 @@ export class CategoryService {
 
     ) { }
 
-
-
-
     async register(dto: CategoryRegisterDto): Promise<CategoryModel> {
 
         let numeroAleatorio = parseInt(randomBytes(2).toString('hex'), 16) % 10000;
@@ -39,17 +36,22 @@ export class CategoryService {
     }
 
     async update(_id: string, dto: CategoryRegisterDto): Promise<CategoryModel> {
+        const item = await this._categoryRepository.getById(_id);
+        if(!item) {
+            throw new BadRequestException('Categoria não encontrada!');
+        }
         const result = await this._categoryRepository.update(_id, dto);
         return result;
     }
 
 
-
     async getById(_id: string): Promise<CategoryModel> {
         const result = await this._categoryRepository.getById(_id);
+        if(!result) {
+            throw new BadRequestException('Categoria não encontrada!');
+        }
         return result;
     }
-
 
 
     async deleteById(_id: string) {
@@ -58,10 +60,3 @@ export class CategoryService {
 
 
 }
-
-
-// Enquanto a situação da licitação está como "Em rascunho" é possível clicar no botão
-// “Editar" para alterar todos os campos, exceto "Tipo de licitação" e "Modalidade", que não
-// podem ser modificados.
-// Além disso, enquanto está sob o status "Em rascunho", a licitação ainda pode ser excluída
-// clicando no botão “Excluir”.

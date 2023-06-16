@@ -9,6 +9,12 @@ export abstract class AllotAddProposalDto {
     @ApiProperty({ type: Boolean, default: false })
     deleted: boolean;
 
+    @ApiProperty({ type: Boolean, default: false })
+    association_accept: boolean;
+
+    @ApiProperty({ type: Boolean, default: false })
+    supplier_accept: boolean;
+
     @ApiProperty({ type: String, enum: ProposalStatusEnum })
     status: ProposalStatusEnum;
 

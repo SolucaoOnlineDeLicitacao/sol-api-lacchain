@@ -1,7 +1,5 @@
 import { TutorialInterface } from '../interfaces/tutorial.interface';
 import { Injectable } from "@nestjs/common";
-import { TutorialCreateDto } from "../dtos/tutorial/tutorial-register.dto";
-import { TutorialUpdateDto } from "../dtos/tutorial/tutorial-update.dto";
 import { TutorialLocationEnum } from "../enums/tutorial-location.enum";
 import { TutorialRepository } from "../repositories/tutorial.repository";
 

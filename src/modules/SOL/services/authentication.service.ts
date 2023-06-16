@@ -92,7 +92,7 @@ export class AuthenticationService {
   ): Promise<AuthenticateResponseDto> {
 
     const userByemail = await this._userRepository.getByEmail(dto.email);
-    if(userByemail && userByemail.status == UserStatusEnum.inactive) throw new NotFoundException('Usuário inativo, faça o primeiro acesso!');
+    if (userByemail && userByemail.status == UserStatusEnum.inactive) throw new NotFoundException('Usuário inativo, faça o primeiro acesso!');
 
     const user = await this.validate(dto.email, dto.password);
 
@@ -127,7 +127,6 @@ export class AuthenticationService {
       user.id,
       accessToken.accessToken,
       refreshToken.accessToken,
-      user.wallet.address,
       user.type
     );
   }
@@ -139,44 +138,4 @@ export class AuthenticationService {
   async updateRefreshTokenFromUser(user: UserModel, refreshToken: { accessToken: string; expiresIn: any; }) {
     this._userRepository.updateRefreshToken(user._id, await bcrypt.hash(refreshToken.accessToken, 13));
   }
-
-  // async refreshTokens(userId: string, refreshToken: string) {
-  //   const user = await this._userRepository.getById(userId);
-  //   if (!!!user || !!!user.refreshToken)
-  //     throw new ForbiddenException('Access Denied');
-    
-  //   const refreshTokenMatches = await bcrypt.compare(
-  //     refreshToken,
-  //     user.refreshToken,
-  //   );
-  //   if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
-  //   const tfa = await this._tfaRepository.getByUserId(user._id.toString());
-
-  //   const newAccessToken = this.createAccessToken(
-  //     user._id,
-  //     user.email,
-  //     user.wallet.address,
-  //     !!tfa ? true : false,
-  //     !!tfa ? true : false,
-  //   );
-
-  //   const newRefreshToken = this.createRefreshToken(
-  //     user._id,
-  //     user.email,
-  //     user.wallet.address,
-  //     !!tfa ? true : false,
-  //     !!tfa ? true : false,
-  //   );
-
-  //   this.updateRefreshTokenFromUser(user, newRefreshToken);
-
-  //   return new AuthenticateResponseDto(
-  //     user.email,
-  //     user.name,
-  //     newAccessToken.accessToken,
-  //     newRefreshToken.accessToken,
-  //     user.wallet.address,
-  //     user.type
-  //   );
-  // }
 }

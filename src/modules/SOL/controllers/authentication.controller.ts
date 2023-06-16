@@ -80,35 +80,6 @@ export class AuthenticationController {
         }
     }
 
-    // @Post('/refresh')
-    // @HttpCode(200)
-    // @UseGuards(JwtRefreshAuthGuard)
-    // @ApiBearerAuth()
-    // async refreshToken(
-    //     @Req() request,
-    // ) {
-
-    //     try {
-
-    //         const payload: any = request.user;
-
-    //         const response = await this.authenticationService.refreshTokens(payload.userId, payload.refreshToken);
-
-    //         return new ResponseDto(
-    //             true,
-    //             response,
-    //             null
-    //         );
-
-    //     } catch (error) {
-    //         throw new HttpException(
-    //             new ResponseDto(
-    //                 false,
-    //                 null,
-    //                 [error.message]), HttpStatus.BAD_REQUEST);
-    //     }
-    // }
-
     @Get('/authenticated')
     @HttpCode(200)
     @UseGuards(JwtAuthGuard)

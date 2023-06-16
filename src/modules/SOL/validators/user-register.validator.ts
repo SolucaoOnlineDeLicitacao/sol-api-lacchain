@@ -25,7 +25,6 @@ export class UserRegisterValidator implements ValidatorContractInterface {
         if(dto.type == UserTypeEnum.associacao) {
             validator.isRequired(dto.phone, 'Telefone é obrigatório!');
             validator.isRequired(dto.document, 'CPF/CNPJ é obrigatório!');
-            validator.isRequired(dto.office, 'Cargo é obrigatório!');
             validator.isRequired(dto.association, 'Associação é obrigatório!');
         }
 

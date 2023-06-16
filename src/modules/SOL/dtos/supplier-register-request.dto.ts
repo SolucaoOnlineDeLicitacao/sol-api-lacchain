@@ -4,6 +4,7 @@ import { LegalRepresentativeRegisterDto } from "src/shared/dtos/legal-representa
 import { SuplierTypeEnum } from "../enums/supplier-type.enum";
 import { Address } from "src/shared/schemas/address.schema";
 import { LegalRepresentative } from "src/shared/schemas/legal-representative.schema";
+import { CategoryInterface } from "../interfaces/category.interface";
 
 export abstract class SupplierRegisterDto {
 
@@ -24,6 +25,11 @@ export abstract class SupplierRegisterDto {
 
     @ApiProperty({ type: Array })
     group_id: string[];
+
+    @ApiProperty({ type: Array })
+    categoriesId: string[];
+
+    categories: CategoryInterface[];
 
 
 }

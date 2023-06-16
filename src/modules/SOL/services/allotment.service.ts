@@ -1,64 +1,75 @@
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger, StreamableFile } from "@nestjs/common";
 import { AllotmentRepository } from "../repositories/allotment.repository";
 import { AllotmentModel } from "../models/allotment.model";
 import { AllotmentRegisterDto } from "../dtos/allotment-register-request.dto";
 import { AllotAddProposalDto } from "../dtos/allotment-add-proposal-request.dto";
 import { ItemRequestDto } from "../dtos/item-register-request.dto";
+import { FileRepository } from "../repositories/file.repository";
+import { AllotmentStatusEnum } from "../enums/allotment-status.enum";
+import { MutableObject } from "src/shared/interfaces/mutable-object.interface";
 
 @Injectable()
 export class AllotmentService {
+  private readonly _logger = new Logger(AllotmentService.name);
 
-    private readonly _logger = new Logger(AllotmentService.name);
+  constructor(
+    private readonly _allotmentRepository: AllotmentRepository,
+    private readonly _fileRepository: FileRepository,
+  ) { }
 
-    constructor(
-        private readonly _allotmentRepository: AllotmentRepository,
-      
-    
-    ) { }
+  async register(dto: AllotmentRegisterDto): Promise<AllotmentModel> {
+    dto.status = AllotmentStatusEnum.rascunho;
 
- 
+    const result = await this._allotmentRepository.register(dto);
 
-    async register(associationId: string, dto: AllotmentRegisterDto): Promise<AllotmentModel> {
+    if (!result) throw new BadRequestException("Não foi possivel cadastrar essa essa proposta!");
 
-        console.log('serviço do allot', dto)
-      const result =  await this._allotmentRepository.register(dto)
-        
-      
+    return result;
+  }
 
-    
-        if (!result)
-            throw new BadRequestException('Não foi possivel cadastrar essa essa proposta!');
+  async list(): Promise<AllotmentModel[]> {
+    const result = await this._allotmentRepository.list();
+    return result;
+  }
 
-        return result;
-
+  async listById(_id: string): Promise<AllotmentModel> {
+    const result = await this._allotmentRepository.listById(_id);
+    if (!result) {
+      throw new BadRequestException("Não foi possivel cadastrar essa essa proposta!");
     }
 
-    async list(): Promise<AllotmentModel[]> {
-        const result = await this._allotmentRepository.list();
-        return result;
+    return result;
+  }
+
+  async updateStatus(_id: string, status: AllotmentStatusEnum): Promise<AllotmentModel> {
+    const item: MutableObject<AllotmentModel> = await this._allotmentRepository.listById(_id);
+    if (!item) {
+      throw new BadRequestException("Não foi possivel cadastrar essa essa proposta!");
     }
+    item.status = status;
+    const result = await this._allotmentRepository.update(_id, item);
+    return result;
+  }
 
-    async listById(_id: string): Promise<AllotmentModel> {
-        const result = await this._allotmentRepository.listById(_id);
-        return result;
+  async updateProposal(_id: string, dto: AllotAddProposalDto): Promise<AllotmentModel> {
+    const item = await this._allotmentRepository.listById(_id);
+    if (!item) {
+      throw new BadRequestException('Não foi possivel cadastrar essa essa proposta!');
     }
+    return
+  }
 
-    async updateProposal(_id: string, dto: AllotAddProposalDto): Promise<AllotmentModel> {
-        const result = await this._allotmentRepository.updateProposal(_id, dto);
-        return result;
+  async downloadAllotmentById(_id: string): Promise<any> {
+    const result = await this._allotmentRepository.listById(_id);
+    if (!result) {
+      throw new BadRequestException('Não foi possivel cadastrar essa essa proposta!');
     }
+    return this._fileRepository.download(result.files);
+  }
 
-    async updateItem(_id: string, dto: ItemRequestDto): Promise<AllotmentModel> {
-        const result = await this._allotmentRepository.updateItem(_id, dto);
-        return result;
-    }
-
-  
-
-    // async deleteById(_id: string) {
-    //     return await this._bidsRepository.deleteById(_id);
-    // }
-
+  async updateItem(_id: string, dto: ItemRequestDto): Promise<AllotmentModel> {
+    const result = await this._allotmentRepository.updateItem(_id, dto);
+    return result;
+  }
 
 }
-

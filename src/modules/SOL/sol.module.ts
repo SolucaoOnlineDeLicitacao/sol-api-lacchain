@@ -22,10 +22,6 @@ import { SendGridModule } from "@ntegral/nestjs-sendgrid";
 import { HttpModule } from "@nestjs/axios";
 import { AgreementController } from "./controllers/agreement.controller";
 import { AgreementRepository } from "./repositories/agreement.repository";
-import { S3Service } from "src/shared/services/s3.service";
-import { SmsRepository } from "./repositories/sms.repository";
-import { PushNotificationsController } from "./controllers/push-notification.controller";
-import { FirebaseService } from "./services/firebase.service";
 import { RefreshTokenStrategy } from "src/shared/strategies/jwt-refresh-token-strategy";
 import { TutorialController } from "./controllers/tutorial.controller";
 import { TutorialService } from "./services/tutorial.service";
@@ -56,7 +52,6 @@ import { ContractRepository } from './repositories/contract.repository';
 import { ProposalService } from './services/proposal.service';
 import { ProposalRepository } from './repositories/proposal.repository';
 import { ProposalController } from './controllers/proposal.controller';
-import { S3Repository } from './repositories/s3.repository';
 import { WorkPlanRepository } from './repositories/work-plan.repository';
 import { WorkPlanService } from './services/work-plan.service';
 import { AgreementService } from './services/agreement.service';
@@ -64,6 +59,13 @@ import { WorkPlanController } from './controllers/work-plan.controle';
 import { AllotmentRepository } from './repositories/allotment.repository';
 import { AllotmentService } from './services/allotment.service';
 import { AllotmentController } from './controllers/allotment.controller';
+import { ModelContractRepository } from './repositories/model-contract.repository';
+import { ModelContractController } from './controllers/model-contract.controller';
+import { ModelContractService } from './services/model-contract.service';
+import { NotificationtController } from './controllers/notification.controller';
+import { NotificationService } from './services/notification.service';
+import { NotificationRepository } from './repositories/notification.repository';
+import { FileRepository } from './repositories/file.repository';
 @Module({
     imports: [
         PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -90,7 +92,6 @@ import { AllotmentController } from './controllers/allotment.controller';
         UserController,
         TfaController,
         AgreementController,
-        PushNotificationsController,
         TutorialController,
         AssociationController,
         CostItemsController,
@@ -99,10 +100,12 @@ import { AllotmentController } from './controllers/allotment.controller';
         CategoryController,
         SupplierController,
         ContractController,
+        ModelContractController,
         ProposalController,
         AgreementController,
         WorkPlanController,
-        AllotmentController
+        AllotmentController,
+        NotificationtController
     ],
     providers: [
         JwtStrategy,
@@ -111,16 +114,12 @@ import { AllotmentController } from './controllers/allotment.controller';
         TfaRepository,
         VerificationRepository,
         TutorialRepository,
-        SmsRepository,
         AuthenticationService,
         UserService,
         SecurityService,
         TfaService,
         VerificationService,
         EmailService,
-        S3Service,
-        S3Repository,
-        FirebaseService,
         TutorialService,
         AssociationService,
         AssociationRepository,
@@ -137,22 +136,29 @@ import { AllotmentController } from './controllers/allotment.controller';
         SupplierService,
         SupplierRepository,
         ContractService,
+        ModelContractService,
         ContractRepository,
         ProposalService,
         ProposalRepository,
         WorkPlanRepository,
         WorkPlanService,
         ContractRepository,
+        ModelContractRepository,
         AgreementService,
         AgreementRepository,
 
         AllotmentService,
-        AllotmentRepository
+        AllotmentRepository,
+
+        NotificationService,
+        NotificationRepository,
+        FileRepository,
     ],
     exports: [
         AuthenticationService,
         UserService,
         UserRepository,
+        AssociationService,
     ]
 })
 export class SolModule { }

@@ -14,9 +14,10 @@ export class ContractRepository {
     ) { }
 
     async register(dto: ContractRegisterDto): Promise<ContractModel> {
-
         const data = await new this._model(dto);
-        return data.save();
+        const saveResult = await data.save();
+        await this._model.findOneAndUpdate({ _id: saveResult._id }, { $inc: { sequencial_number: 1 } }, { new: true });
+        return saveResult;
     }
 
     async updateStatus(_id: string, dto: ContractUpdateDto): Promise<ContractModel> {
@@ -24,7 +25,35 @@ export class ContractRepository {
             $set: {
                 status: dto.status,
             }
-        }, {new: true });
+        }, { new: true });
+    }
+
+    async updateContractNumber(_id: string, sequencial:number): Promise<ContractModel> {
+        return await this._model.findOneAndUpdate({ _id }, {
+            $set: {
+                contract_number: `${sequencial}/${new Date().getFullYear()}`
+            }
+        }, { new: true });
+    }
+
+    async signAssociation(_id: string, dto: ContractUpdateDto): Promise<ContractModel> {
+        return await this._model.findOneAndUpdate({ _id }, {
+            $set: {
+                association_accept: true,
+                association_id: dto.association_id,
+                association_sign_date: new Date().toDateString()
+            }
+        }, { new: true });
+    }
+
+    async signSupplier(_id: string, dto: ContractUpdateDto): Promise<ContractModel> {
+        return await this._model.findOneAndUpdate({ _id }, {
+            $set: {
+                supplier_accept: true,
+                supplier_id: dto.association_id,
+                supplier_sign_date: new Date().toDateString()
+            }
+        }, { new: true });
     }
 
     async list(): Promise<ContractModel[]> {
@@ -32,7 +61,7 @@ export class ContractRepository {
     }
 
     async listNonDeleted(): Promise<ContractModel[]> {
-        return await this._model.find({delete: false});
+        return await this._model.find({ delete: false });
     }
 
     async getById(_id: string): Promise<ContractModel> {
@@ -40,9 +69,11 @@ export class ContractRepository {
     }
 
     async deleteById(_id: string) {
-        return await this._model.findByIdAndUpdate({ _id }, {$set: {
-            delete: true
-        }}, {new: true});
+        return await this._model.findByIdAndUpdate({ _id }, {
+            $set: {
+                delete: true
+            }
+        }, { new: true });
     }
 
 }

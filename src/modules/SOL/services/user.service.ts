@@ -38,19 +38,23 @@ export class UserService {
       result.email,
       result.phone,
       result.status,
-      result.wallet.address,
       result.document,
       result.profilePicture,
       result.office,
       result.association,
       result.supplier,
-      result.roles
+      result.roles,
+      result.notification_list
     );
 
   }
 
   async getByIdInternal(_id: string): Promise<UserInterface> {
     return await this._userRepository.getById(_id);
+  }
+
+  async getAll(): Promise<UserInterface[]> {
+    return await this._userRepository.getAll();
   }
 
   async getByEmail(email: string): Promise<UserGetResponseDto> {
@@ -64,7 +68,6 @@ export class UserService {
       result.email,
       result.phone,
       result.status,
-      result.wallet.address,
       result.document
     );
   }
@@ -82,7 +85,6 @@ export class UserService {
       result.email,
       result.phone,
       result.status,
-      result.wallet.address,
       result.document
     );
   }
@@ -194,50 +196,6 @@ export class UserService {
     return new UserUpdateProfilePictureResponseDto(userModel.profilePicture);
 
   }
-
-  // async getBalance(_id: string): Promise<GetBalanceResponseDto> {
-  //   const response: GetBalanceResponseDto = new GetBalanceResponseDto(_id, []);
-
-  //   const user = await this._userRepository.getById(_id);
-
-  //   const ethBalance = await this._tokenRepository.getEthBalance(
-  //     user.wallet.address,
-  //   );
-
-  //   response.balances.push({ symbol: 'ETH', value: ethBalance });
-
-  //   const bnbBalance = await this._tokenRepository.getBNBBalance(
-  //     user.wallet.address,
-  //   );
-
-  //   response.balances.push({ symbol: 'BNB', value: bnbBalance });
-
-  //   const ziBalance = await this._tokenRepository.getZIBalance(
-  //     user.wallet.address,
-  //   );
-
-  //   response.balances.push({ symbol: 'ZI', value: ziBalance });
-
-  //   const busdBalance = await this._tokenRepository.getBUSDBalance(
-  //     user.wallet.address,
-  //   );
-
-  //   response.balances.push({ symbol: 'BUSD', value: busdBalance });
-
-  //   const usdtBalance = await this._tokenRepository.getUSDTBalance(
-  //     user.wallet.address,
-  //   );
-
-  //   response.balances.push({ symbol: 'USDT', value: usdtBalance });
-
-  //   const maticBalance = await this._tokenRepository.getMaticBalance(
-  //     user.wallet.address,
-  //   );
-
-  //   response.balances.push({ symbol: 'MATIC', value: maticBalance });
-
-  //   return response;
-  // }
 
   async listByType(type: UserTypeEnum): Promise<UserListByTypeResponseDto[]> {
 

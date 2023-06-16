@@ -35,12 +35,8 @@ export abstract class AgreementRegisterRequestDto {
 
     @ApiProperty({ required: false, type: String })
     reviewerId: string;
-
-    // @ApiProperty({ required: true, type: [String] })
-    // workPlanId: string[];
-
     association: AssociationModel;
     reviewer: UserModel;
-    // workPlan: WorkPlanModel[];
+
     
 }

@@ -69,10 +69,39 @@ export class UserController {
     }
   }
 
+  @Get('all')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getAll(
+  ) {
+
+    try {
+
+
+      const response = await this.userService.getAll();
+
+      return new ResponseDto(
+        true,
+        response,
+        null,
+      );
+
+
+    } catch (error) {
+      this.logger.error(error.message);
+
+      throw new HttpException(
+        new ResponseDto(false, null, [error.message]),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   @Get('get-by-id/:_id')
   @HttpCode(200)
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getById(
     @Param('_id') _id: string,
   ) {
@@ -231,17 +260,7 @@ export class UserController {
           response,
           null,
         );
-      } else {
-        let response = await this.verificationService.sendSms(dto);
-
-        return new ResponseDto(
-          true,
-          response,
-          null,
-        );
-      }
-
-
+      } 
 
     } catch (error) {
       this.logger.error(error.message);
@@ -262,34 +281,6 @@ export class UserController {
     try {
 
       const response = await this.verificationService.resendCodeRegisterEmail(dto)
-
-      return new ResponseDto(
-        true,
-        response,
-        null,
-      );
-
-
-
-    } catch (error) {
-      this.logger.error(error.message);
-
-      throw new HttpException(
-        new ResponseDto(false, null, [error.message]),
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  @Post('resend-code-register-sms')
-  @HttpCode(200)
-  async resendCodeRegisterSms(
-    @Body() dto: UserRegisterResendEmailRequestDto,
-  ) {
-
-    try {
-
-      const response = await this.verificationService.resendCodeRegisterSms(dto)
 
       return new ResponseDto(
         true,

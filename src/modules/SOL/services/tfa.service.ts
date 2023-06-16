@@ -3,10 +3,8 @@ import { TfaGetResponseDto } from "../dtos/tfa-get-response.dto";
 import { TfaRepository } from "../repositories/tfa.repository";
 import { UserRepository } from "../repositories/user.repository";
 import { authenticator } from 'otplib';
-import { TfaGenerateResponseDto } from "../dtos/tfa-generate-response.dto";
 import { TfaModel } from "../models/tfa.model";
 import { TfaRegisterRequestDto } from "../dtos/tfa-register-request.dto";
-import { TfaRegisterResponseDto } from "../dtos/tfa-register-response.dto";
 import { TfaVerifyRequestDto } from "../dtos/tfa-verify-request.dto";
 import { TfaVerifyAuthRequestDto } from "../dtos/tfa-verify-auth-request.dto";
 import * as bcrypt from 'bcryptjs';
@@ -36,12 +34,6 @@ export class TfaService {
         );
     }
 
-    async create(email: string): Promise<TfaGenerateResponseDto> {
-        const secret = authenticator.generateSecret();
-        const otpauthUrl = authenticator.keyuri(email, 'ZI Wallet', secret);
-        return new TfaGenerateResponseDto(secret, otpauthUrl);
-    }
-
     async register(dto: TfaRegisterRequestDto) {
 
         const tfa: TfaModel = await this._tfaRepository.getByUserId(dto.userId);
@@ -53,10 +45,6 @@ export class TfaService {
 
         await this._tfaRepository.save(dto);
 
-        // return new TfaRegisterResponseDto(
-        //     result._id,
-        //     dto.user._id
-        // );
 
         const accessToken = this.authenticationService.createAccessToken(
             dto.user._id,
@@ -80,7 +68,6 @@ export class TfaService {
             dto.user.id,
             accessToken.accessToken,
             refreshToken.accessToken,
-            dto.user.wallet.address,
             dto.user.type
         );
     }
@@ -122,7 +109,6 @@ export class TfaService {
             dto.user.id,
             accessToken.accessToken,
             refreshToken.accessToken,
-            dto.user.wallet.address,
             dto.user.type
         );
     }

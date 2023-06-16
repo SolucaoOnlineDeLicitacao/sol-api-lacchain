@@ -73,7 +73,7 @@ export class AgreementController {
     try {
       const response = await this._airdropService.findById(id);
 
-      return new ResponseDto(true, response, null);
+      return new ResponseDto(true, response, null)
     } catch (error) {
       this._logger.error(error.message);
 
@@ -139,11 +139,12 @@ export class AgreementController {
   async removeWorkPlan(@Param("id") id: string, @Body() dto: WorkPlanWorkPlanRequestDto) {
     try {
       const response = await this._airdropService.removeWorkPlan(id, dto.workPlanId);
-      return new ResponseDto(true, response, null);
+      return response;
     } catch (error) {
       this._logger.error(error.message);
 
       throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
     }
   }
+
 }

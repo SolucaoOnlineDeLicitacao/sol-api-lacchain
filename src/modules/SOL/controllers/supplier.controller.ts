@@ -50,8 +50,8 @@ export class SupplierController {
 
     @Get('list')
     @HttpCode(200)
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     async list() {
 
         try {
@@ -77,8 +77,8 @@ export class SupplierController {
 
     @Get('get-by-id/:_id')
     @HttpCode(200)
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     async getById(
         @Param('_id') _id: string,
     ) {
@@ -197,43 +197,10 @@ export class SupplierController {
         }
     }
 
-    // @Put('change-status/:_id')
-    // @HttpCode(200)
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
-    // async updateStatus(
-    //     @Param('_id') _id: string,
-    //     @Body() dto: BidUpdateStatusRequestDto,
-    //     @Req() request,
-    // ) {
-
-    //     try {
-
-    //         const payload: JwtPayload = request.user;
-
-    //         const response = await this.bidsService.updateStatus(payload.userId, _id, dto);
-
-    //         return new ResponseDto(
-    //             true,
-    //             response,
-    //             null,
-    //         );
-
-
-    //     } catch (error) {
-    //         this.logger.error(error.message);
-
-    //         throw new HttpException(
-    //             new ResponseDto(false, null, [error.message]),
-    //             HttpStatus.BAD_REQUEST,
-    //         );
-    //     }
-    // }
-
     @Delete('delete-by-id/:_id')
     @HttpCode(200)
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     async deleteById(
         @Param('_id') _id: string,
     ) {

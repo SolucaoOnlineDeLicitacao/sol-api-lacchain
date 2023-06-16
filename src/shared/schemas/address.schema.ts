@@ -18,10 +18,10 @@ export class Address {
     @Prop({ type: String, required: true })
     state: string;
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: String, required: false })
     latitude: string;
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: String, required: false })
     longitude: string;
 
     @Prop({ type: String, required: false })

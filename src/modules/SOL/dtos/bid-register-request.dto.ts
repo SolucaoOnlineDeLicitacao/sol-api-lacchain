@@ -10,6 +10,7 @@ import { BidStatusEnum } from "../enums/bid-status.enum";
 
 import { AssociationInterface } from "../interfaces/association.interface";
 import { UserInterface } from "../interfaces/user.interface";
+import { AgreementInterface } from "../interfaces/agreement.interface";
 
 export abstract class BideRegisterDto {
 
@@ -20,7 +21,7 @@ export abstract class BideRegisterDto {
     description: string;
 
     @ApiProperty({ type: String })
-    agreement: string;
+    agreementId: string;
 
     @ApiProperty({ type: String })
     classification: string;
@@ -52,12 +53,20 @@ export abstract class BideRegisterDto {
     @ApiProperty({ type: String })
     aditional_site: string;
 
-    @ApiProperty({ type: AllotmentRequestDto })
-    add_allotment: AllotmentRequestDto;
+    @ApiProperty({ type: [AllotmentRequestDto] })
+    add_allotment: AllotmentRequestDto[];
 
     @ApiProperty({ type: Array })
     invited_suppliers: string[];
 
+    @ApiProperty({ type: String })
+    editalFile: string;
+
+    @ApiProperty({ type: String })
+    ataFile: string;
+
     association: UserInterface;
+
+    agreement: AgreementInterface;
 
 }

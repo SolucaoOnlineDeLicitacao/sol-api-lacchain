@@ -1,7 +1,4 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { UnitMeasureEnum } from "../enums/unit-measure.enum";
-import mongoose from "mongoose";
-import { CostItems } from "./cost-items.schema";
 
 @Schema({ timestamps: true, collection: GroupCostItemRealation.name.toLowerCase() })
 export class GroupCostItemRealation {

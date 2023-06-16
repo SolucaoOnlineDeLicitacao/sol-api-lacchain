@@ -42,4 +42,8 @@ export class CategoryRepository {
         return await this._model.findByIdAndDelete({ _id });
     }
 
+    async listByIds(ids: string[]): Promise<CategoryModel[]> {
+        return await this._model.find({ _id: { $in: ids } });
+    }
+
 }

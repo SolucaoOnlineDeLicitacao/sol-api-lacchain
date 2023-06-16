@@ -1,10 +1,10 @@
 import mongoose, { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { UserStatusEnum } from "../enums/user-status.enum";
-import { Wallet, WalletSchema } from "../../../shared/schemas/wallet.schema";
 import { UserTypeEnum } from '../enums/user-type.enum';
 import { UserRolesEnum } from "../enums/user-roles.enum";
 import { Association } from './association.schema';
+import { Notification } from './notification.schema';
 
 @Schema({ timestamps: true, collection: User.name.toLowerCase() })
 export class User {
@@ -44,14 +44,9 @@ export class User {
 
     @Prop({ required: false, enum: Object.keys(UserRolesEnum) })
     roles: UserRolesEnum;
+
+    @Prop({ required: false, type: mongoose.Schema.Types.Array, ref: Notification.name })
+    notification_list: Notification[]
     
-    @Prop({ type: WalletSchema })
-    wallet: Wallet;
-
-    // @Prop({ default: null })
-    // refreshToken: string;
-
-    // @Prop()
-    // pushNotificationToken: string[];
 }
 export const UserSchema = SchemaFactory.createForClass(User);

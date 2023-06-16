@@ -7,6 +7,8 @@ import { AllotmentRequestDto } from "./allotment-request.dto";
 import { User } from "../schemas/user.schema";
 import { UserRegisterRequestDto } from "./user-register-request.dto";
 import { BidStatusEnum } from "../enums/bid-status.enum";
+import { AgreementInterface } from "../interfaces/agreement.interface";
+import { Supplier } from "../schemas/supplier.schema";
 
 export abstract class BidUpdateDto {
 
@@ -14,7 +16,7 @@ export abstract class BidUpdateDto {
     description: string;
 
     @ApiProperty({ type: String })
-    agreement: string;
+    agreementId: string;
 
     @ApiProperty({ type: String })
     classification: string;
@@ -24,8 +26,8 @@ export abstract class BidUpdateDto {
 
     @ApiProperty({ type: String })
     end_at: string;
-    @ApiProperty({ type: String })
 
+    @ApiProperty({ type: String })
     days_to_delivery: string;
 
     @ApiProperty({ type: String })
@@ -40,10 +42,12 @@ export abstract class BidUpdateDto {
     @ApiProperty({ type: String })
     aditional_site: string;
 
-    @ApiProperty({ type: AllotmentRequestDto })
-    add_allotment: AllotmentRequestDto;
+    @ApiProperty({ type: [AllotmentRequestDto] })
+    add_allotment: AllotmentRequestDto[];
 
-    @ApiProperty({ type: UserRegisterRequestDto })
-    invited_suppliers: User[];
+    @ApiProperty({ type: Supplier })
+    invited_suppliers: Supplier[];
+
+    agreement: AgreementInterface;
     
 }

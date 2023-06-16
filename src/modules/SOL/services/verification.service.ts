@@ -3,7 +3,6 @@ import { VerificationRepository } from "../repositories/verification.repository"
 import { VerificationRegisterRequestDto } from "../dtos/vertification-register-request.dto";
 import { EmailService } from "src/shared/services/email.service";
 import NumberUtil from "src/shared/utils/number.util";
-import { UserStatusEnum } from "../enums/user-status.enum";
 import { UserGetResponseDto } from "../dtos/user-get-response.dto";
 import { UserRepository } from "../repositories/user.repository";
 import { VerificationRegisterResponseDto } from "../dtos/vertification-register-response.dto";
@@ -11,7 +10,6 @@ import { UserModel } from "../models/user.model";
 import { UserResetPasswordResendEmailRequestDto } from "../dtos/user-reset-password-resend-email-request.dto";
 import { UserResetPasswordResendEmailResponseDto } from "../dtos/user-reset-password-resend-email-response.dto";
 import { UserConfirmationRegisterSendRequestDto } from "../dtos/user-confirmation-register-request.dto";
-import { SmsRepository } from "../repositories/sms.repository";
 import { UserRegisterResendEmailRequestDto } from "../dtos/user-register-resend-email-request.dto";
 
 @Injectable()
@@ -23,15 +21,12 @@ export class VerificationService {
         private readonly emailService: EmailService,
         private readonly verificationRepository: VerificationRepository,
         private readonly userRepository: UserRepository,
-        private readonly smsRepository: SmsRepository,
     ) { }
 
     async send(user: UserGetResponseDto): Promise<VerificationRegisterResponseDto> {
 
         const userModel = await this.userRepository.getById(user._id);
 
-        // if (userModel.status == UserStatusEnum.inactive)
-        //     throw new ForbiddenException('User not found!');
 
         let verification = await this.verificationRepository.getByUser(userModel);
 
@@ -76,9 +71,6 @@ export class VerificationService {
 
         const userModel = await this.userRepository.getById(user._id);
 
-        // if (userModel.status == UserStatusEnum.inactive)
-        //     throw new ForbiddenException('User not found!');
-
         let verification = await this.verificationRepository.getByUser(userModel);
 
         if (verification) {
@@ -118,46 +110,46 @@ export class VerificationService {
         );
     }
 
-    async sendSms(dto: UserConfirmationRegisterSendRequestDto): Promise<UserResetPasswordResendEmailResponseDto> {
-        const userModel = await this.userRepository.getByPhone(dto.value);
+    // async sendSms(dto: UserConfirmationRegisterSendRequestDto): Promise<UserResetPasswordResendEmailResponseDto> {
+    //     const userModel = await this.userRepository.getByPhone(dto.value);
 
-        let verification = await this.verificationRepository.getByUser(userModel);
+    //     let verification = await this.verificationRepository.getByUser(userModel);
 
-        if (verification) {
-            const now = new Date();
-            if (now < verification.deadline) {
-                throw new UnauthorizedException(
-                    'Um sms já foi enviado e está válido!',
-                );
-            } else {
-                await this.verificationRepository.delete(verification._id);
-            }
-        }
+    //     if (verification) {
+    //         const now = new Date();
+    //         if (now < verification.deadline) {
+    //             throw new UnauthorizedException(
+    //                 'Um sms já foi enviado e está válido!',
+    //             );
+    //         } else {
+    //             await this.verificationRepository.delete(verification._id);
+    //         }
+    //     }
 
-        let deadline: Date = new Date();
-        deadline.setMinutes(deadline.getMinutes() + 5);
+    //     let deadline: Date = new Date();
+    //     deadline.setMinutes(deadline.getMinutes() + 5);
 
-        const code = NumberUtil.generateRandomNumber();
+    //     const code = NumberUtil.generateRandomNumber();
 
-        verification = await this.verificationRepository.save(
-            new VerificationRegisterRequestDto(
-                0,
-                deadline,
-                userModel,
-                code,
-            )
-        );
+    //     verification = await this.verificationRepository.save(
+    //         new VerificationRegisterRequestDto(
+    //             0,
+    //             deadline,
+    //             userModel,
+    //             code,
+    //         )
+    //     );
 
-        let message = `LACCHAIN - Confirmação de cadastro,
-        Ola ${userModel.name}, seu codigo para confirmação de cadastro é ${code}`
+    //     let message = `LACCHAIN - Confirmação de cadastro,
+    //     Ola ${userModel.name}, seu codigo para confirmação de cadastro é ${code}`
 
-        await this.smsRepository.send(dto.value, message);
+    //     await this.smsRepository.send(dto.value, message);
 
-        return new UserResetPasswordResendEmailResponseDto(
-            verification._id,
-            userModel.email,
-        );
-    }
+    //     return new UserResetPasswordResendEmailResponseDto(
+    //         verification._id,
+    //         userModel.email,
+    //     );
+    // }
 
     async resendResetPasswordEmail(dto: UserResetPasswordResendEmailRequestDto): Promise<UserResetPasswordResendEmailResponseDto> {
 
@@ -240,40 +232,40 @@ export class VerificationService {
         );
     }
 
-    async resendCodeRegisterSms(dto: UserRegisterResendEmailRequestDto): Promise<UserResetPasswordResendEmailResponseDto> {
+    // async resendCodeRegisterSms(dto: UserRegisterResendEmailRequestDto): Promise<UserResetPasswordResendEmailResponseDto> {
 
-        const userModel = await this.userRepository.getByEmail(dto.email);
+    //     const userModel = await this.userRepository.getByEmail(dto.email);
 
-        let verification = await this.verificationRepository.getByUser(userModel);
+    //     let verification = await this.verificationRepository.getByUser(userModel);
 
-        if (verification) {
-            await this.verificationRepository.delete(verification._id);
-        }
+    //     if (verification) {
+    //         await this.verificationRepository.delete(verification._id);
+    //     }
 
-        let deadline: Date = new Date();
-        deadline.setMinutes(deadline.getMinutes() + 5);
+    //     let deadline: Date = new Date();
+    //     deadline.setMinutes(deadline.getMinutes() + 5);
 
-        const code = NumberUtil.generateRandomNumber();
+    //     const code = NumberUtil.generateRandomNumber();
 
-        verification = await this.verificationRepository.save(
-            new VerificationRegisterRequestDto(
-                0,
-                deadline,
-                userModel,
-                code,
-            )
-        );
+    //     verification = await this.verificationRepository.save(
+    //         new VerificationRegisterRequestDto(
+    //             0,
+    //             deadline,
+    //             userModel,
+    //             code,
+    //         )
+    //     );
 
-        let message = `LACCHAIN - Confirmação de cadastro,
-        Ola ${userModel.name}, seu codigo para confirmação de cadastro é ${code}`
+    //     let message = `LACCHAIN - Confirmação de cadastro,
+    //     Ola ${userModel.name}, seu codigo para confirmação de cadastro é ${code}`
 
-        await this.smsRepository.send(userModel.phone, message);
+    //     await this.smsRepository.send(userModel.phone, message);
 
-        return new UserResetPasswordResendEmailResponseDto(
-            verification._id,
-            userModel.email,
-        );
-    }
+    //     return new UserResetPasswordResendEmailResponseDto(
+    //         verification._id,
+    //         userModel.email,
+    //     );
+    // }
 
     async verifyCode(user: UserModel, code: number) {
 

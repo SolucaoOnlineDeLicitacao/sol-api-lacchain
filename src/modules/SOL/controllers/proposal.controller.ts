@@ -1,14 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, Req, HttpStatus, Logger, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/shared/guards/jwt-auth.guard";
 import { ResponseDto } from "src/shared/dtos/response.dto";
-import { GroupService } from "../services/group.service";
-import { GroupRegisterDto } from "../dtos/group-register-request.dto";
-import { GroupUpdatenameDto } from "../dtos/group-update-name-request.dto";
-import { GroupAddItemsRequestDto } from "../dtos/group-add-items-request.dto";
-import { ContractService } from "../services/contract.service";
-import { ContractRegisterDto } from "../dtos/contract-register-request.dto";
-import { ContractUpdateDto } from "../dtos/contract-update-request.dto";
 import { FuncoesGuard } from "src/shared/guards/funcoes.guard";
 import { UserTypeEnum } from "../enums/user-type.enum";
 import { Funcoes } from "src/shared/decorators/function.decorator";
@@ -16,6 +9,11 @@ import { ProposalService } from "../services/proposal.service";
 import { ProposalRegisterDto } from "../dtos/proposal-register-request.dto";
 import { ProposalAddItemUpdateDto } from "../dtos/proposal-addItem-update.dto";
 import { ProposalStatusUpdateDto } from "../dtos/proposal-status-update-request.dto";
+import { ProposalSupplierAcceptUpdateDto } from "../dtos/proposal-accept-supplier-updatet.dto";
+import { ProposalAssociationAcceptUpdateDto } from "../dtos/proposal-accept-association-updatet.dto";
+import { JwtPayload } from "src/shared/interfaces/jwt-payload.interface";
+import { ProposalRefusedRequestDto } from "../dtos/proposal-refused-request.dto";
+import { ProposalNotificationInterface } from "../interfaces/proposal-notification-dto";
 
 @ApiTags('proposal')
 @Controller('proposal')
@@ -30,15 +28,18 @@ export class ProposalController {
     @Post('register')
     @HttpCode(201)
     @UseGuards(JwtAuthGuard, FuncoesGuard)
-    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.fornecedor)
     @ApiBearerAuth()
     async register(
         @Body() dto: ProposalRegisterDto,
+        @Req() request,
     ) {
 
         try {
 
-            const response = await this.proposalService.register(dto);
+            const payload: JwtPayload = request.user;
+
+            const response = await this.proposalService.register(payload.userId, dto);
 
             return new ResponseDto(
                 true,
@@ -57,10 +58,12 @@ export class ProposalController {
         }
     }
 
+
+
     @Get('list')
     @HttpCode(200)
-    // @UseGuards(JwtAuthGuard, FuncoesGuard)
-    // @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
     @ApiBearerAuth()
     async list() {
 
@@ -115,6 +118,66 @@ export class ProposalController {
         }
     }
 
+    @Get('list-proposal-in-bid/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.fornecedor, UserTypeEnum.associacao)
+    @ApiBearerAuth()
+    async listProposalByBid(
+        @Param('_id') _id: string,
+    ) {
+
+        try {
+
+            const response = await this.proposalService.listByBid(_id);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Get('get-proposal-accepted-bid/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador)
+    @ApiBearerAuth()
+    async getProposalAcceptedBid(
+        @Param('_id') _id: string,
+    ) {
+
+        try {
+
+            const response = await this.proposalService.getProposalAcceptByBid(_id);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
     @Put('status-update/:_id')
     @HttpCode(200)
     @UseGuards(JwtAuthGuard, FuncoesGuard)
@@ -128,6 +191,68 @@ export class ProposalController {
         try {
 
             const response = await this.proposalService.updateStatus(_id, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Put('update-accept-supplier/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.fornecedor)
+    @ApiBearerAuth()
+    async updateAcceptfromSupplier(
+        @Param('_id') _id: string,
+        @Body() dto: ProposalSupplierAcceptUpdateDto,
+    ) {
+
+        try {
+
+            const response = await this.proposalService.updateAcceptfromSupplier(_id, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Put('update-accept-association/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    @ApiBearerAuth()
+    async updateAcceptfromAssosiation(
+        @Param('_id') _id: string,
+        @Body() dto: ProposalAssociationAcceptUpdateDto,
+    ) {
+
+        try {
+
+            const response = await this.proposalService.updateAcceptAssociation(_id, dto);
 
             return new ResponseDto(
                 true,
@@ -211,9 +336,9 @@ export class ProposalController {
 
     @Delete('delete-by-id/:_id')
     @HttpCode(200)
-    // @UseGuards(JwtAuthGuard, FuncoesGuard)
-    // @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
-    // @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    @ApiBearerAuth()
     async deleteById(
         @Param('_id') _id: string,
     ) {
@@ -229,6 +354,75 @@ export class ProposalController {
             );
 
         } catch (error) {
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Put('refuse/:_id')
+    @HttpCode(201)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    @ApiBearerAuth()
+    async refused(
+        @Body() dto: ProposalRefusedRequestDto,
+        @Param('_id') _id: string,
+        @Req() request,
+    ) {
+
+        try {
+
+            const payload: JwtPayload = request.user;
+
+            const response = await this.proposalService.refusedProposal(_id, payload.userId, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Put('accept/:_id')
+    @HttpCode(201)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    @ApiBearerAuth()
+    async accept(
+        @Body() dto: ProposalNotificationInterface,
+        @Param('_id') _id: string,
+        @Req() request,
+    ) {
+
+        try {
+            
+
+            const payload: JwtPayload = request.user;
+
+            const response = await this.proposalService.acceptProposal(_id, payload.userId, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
             throw new HttpException(
                 new ResponseDto(false, null, [error.message]),
                 HttpStatus.BAD_REQUEST,

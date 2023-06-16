@@ -19,8 +19,8 @@ export class GroupController {
 
     @Post('register')
     @HttpCode(201)
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     async register(
         @Body() dto: GroupRegisterDto,
     ) {
@@ -48,8 +48,8 @@ export class GroupController {
 
     @Get('list')
     @HttpCode(200)
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     async list() {
 
         try {
@@ -75,8 +75,8 @@ export class GroupController {
 
     @Get('get-by-id/:_id')
     @HttpCode(200)
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     async getById(
         @Param('_id') _id: string,
     ) {
