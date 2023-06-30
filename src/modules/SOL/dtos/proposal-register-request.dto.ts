@@ -4,6 +4,7 @@ import { BidModel } from "../models/bid.model";
 import { AllotmentModel } from "../models/allotment.model";
 import { User } from "../schemas/user.schema";
 import { UserModel } from "../models/user.model";
+import { ValueForAllotmentInterface } from "../interfaces/value-for-allotment.interface";
 
 export abstract class ProposalRegisterDto {
 
@@ -29,10 +30,10 @@ export abstract class ProposalRegisterDto {
 
     bid: BidModel;
 
-    @ApiProperty({ type: String })
-    allotmentIds: string;
+    @ApiProperty({ type: [String] })
+    allotmentIds: string[];
 
-    allotment: AllotmentModel;
+    allotment: AllotmentModel[];
 
     @ApiProperty({ type: String })
     file: string;
@@ -44,5 +45,10 @@ export abstract class ProposalRegisterDto {
     supplier_accept: boolean;
 
     proposalWin: boolean;
+
+    @ApiProperty({ type: Number })
+    freight: number;
+
+    totalValueForAllotment?: ValueForAllotmentInterface[]
 
 }

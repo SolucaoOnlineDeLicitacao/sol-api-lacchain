@@ -26,7 +26,7 @@ export class AllotmentController {
     try {
       const response = await this.allotmentService.list();
 
-      return new ResponseDto(true, response, null);
+      return new ResponseDto(true, response, null)
     } catch (error) {
       this.logger.error(error.message);
 

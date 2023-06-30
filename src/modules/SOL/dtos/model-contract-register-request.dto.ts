@@ -10,8 +10,8 @@ export abstract class ModelContractRegisterDto {
     @ApiProperty({ type: String, enum: ModelContractStatusEnum })
     status: ModelContractStatusEnum;
 
-    @ApiProperty({ type: Bids})
-    bid: Bids;
+    @ApiProperty({ type: String})
+    classification: string;
 
     @ApiProperty({ type: String })
     contract: string;

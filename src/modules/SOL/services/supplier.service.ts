@@ -5,6 +5,7 @@ import { SupplierRegisterDto } from "../dtos/supplier-register-request.dto";
 import { SupplierUpdateStatusDto } from "../dtos/supplier-update-status-request.dto";
 import { SupplierGroupIdUpdateDto } from "../dtos/supplier-group-id-update.dto";
 import { CategoryRepository } from "../repositories/category.repository";
+import { SupplierRegisterBlockRequestDto } from "../dtos/supplier-register-block-request.dt";
 
 @Injectable()
 export class SupplierService {
@@ -19,19 +20,21 @@ export class SupplierService {
 
     async register(dto: SupplierRegisterDto): Promise<SupplierModel> {
 
-        if(dto.categoriesId.length){
+        if (dto.categoriesId.length) {
             const categories = await this._categoryRepository.listByIds(dto.categoriesId);
-            if(!categories.length)
+            if (!categories.length)
                 throw new BadRequestException('Categoria não encontrada!');
-            
+
             dto.categories = categories
         }
 
 
-       const result = await this._supplierRepository.register(dto)
-       if (!result) {
-           throw new BadRequestException('Não foi possivel cadastrar o fornecedor!');
-       }
+        dto.blocked = false;
+
+        const result = await this._supplierRepository.register(dto)
+        if (!result) {
+            throw new BadRequestException('Não foi possivel cadastrar o fornecedor!');
+        }
 
         return result;
 
@@ -55,11 +58,11 @@ export class SupplierService {
         if (!item) {
             throw new BadRequestException('Fornecedor não encontrado!');
         }
-        if(dto.categoriesId.length){
+        if (dto.categoriesId.length) {
             const categories = await this._categoryRepository.listByIds(dto.categoriesId);
-            if(!categories.length)
+            if (!categories.length)
                 throw new BadRequestException('Categoria não encontrada!');
-            
+
             dto.categories = categories
         }
         const result = await this._supplierRepository.findByIdAndUpdate(_id, dto);
@@ -82,11 +85,11 @@ export class SupplierService {
         }
         const item = await this._supplierRepository.listById(_id)
         const hasItem = item.group_id.find(ele => ele === dto.group_id)
-        if (hasItem !== undefined ) {
-            if ( item.group_id.find(ele => ele === dto.group_id).length === 0 ) {
+        if (hasItem !== undefined) {
+            if (item.group_id.find(ele => ele === dto.group_id).length === 0) {
                 const result = await this._supplierRepository.findByIdAndAddGroup(_id, dto);
                 return result;
-                
+
             } else {
                 const result = await this._supplierRepository.findByIdAndRemoveGroup(_id, dto);
                 return result;
@@ -95,13 +98,21 @@ export class SupplierService {
             const result = await this._supplierRepository.findByIdAndAddGroup(_id, dto);
             return result;
         }
-  
-        
-        
+
+
+
     }
 
     async deleteById(_id: string) {
         return await this._supplierRepository.deleteById(_id);
+    }
+
+    async block(supplierId: string, dto: SupplierRegisterBlockRequestDto) {
+        return await this._supplierRepository.block(supplierId, dto);
+    }
+
+    async unblock(supplierId: string, dto: SupplierRegisterBlockRequestDto) {
+        return await this._supplierRepository.unblock(supplierId, dto);
     }
 
 

@@ -6,6 +6,7 @@ import { Allotment } from "../schemas/allotment.schema";
 import { AllotmentModel } from "../models/allotment.model";
 import { AllotmentRegisterDto } from "../dtos/allotment-register-request.dto";
 import { ItemRequestDto } from "../dtos/item-register-request.dto";
+import { ProposalInAllotmentRequestDto } from "../dtos/proposal-in-allotment-request.dto";
 
 @Injectable()
 export class AllotmentRepository {
@@ -28,11 +29,27 @@ export class AllotmentRepository {
     return list;
   }
 
+  async listByIds(_ids: string[]): Promise<AllotmentModel[]> {
+    const list = await this._model.find({ _id: { $in: _ids } });
+
+    return list;
+  }
+
   async update(_id, dto: any): Promise<AllotmentModel> {
     return await this._model.findOneAndUpdate(
       { _id },
       {
         $set: { dto },
+      },
+      { new: true }
+    );
+  }
+
+  async addProposal(_id, dto: ProposalInAllotmentRequestDto[]): Promise<AllotmentModel> {
+    return await this._model.findOneAndUpdate(
+      { _id },
+      {
+        $set: { proposals: dto },
       },
       { new: true }
     );
@@ -64,4 +81,13 @@ export class AllotmentRepository {
     return item;
   }
 
+  async removeProposal(_id: string): Promise<AllotmentModel> {
+    return await this._model.findOneAndUpdate(
+      { _id, proposals: { $exists: true } },
+      {
+        $set: { proposals: [] },
+      },
+      { new: true }
+    );
+  }
 }

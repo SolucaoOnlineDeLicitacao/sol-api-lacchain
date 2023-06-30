@@ -33,7 +33,8 @@ export class CostItemsRepository {
     async update(_id: string, dto: CostItemsUpdateRequestDto): Promise<CostItemsModel[]> {
         return await this._model.findOneAndUpdate({ _id }, {
             $set: {
-                name: dto.code,
+                code: dto.code,
+                name: dto.name,
                 phone: dto.name,
                 unitMeasure: dto.unitMeasure,
                 category: dto.category,

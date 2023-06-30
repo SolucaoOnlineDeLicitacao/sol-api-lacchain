@@ -31,19 +31,21 @@ export class NotificationService {
 
     }
 
-    async registerByBidCreation(_id: string , dto: NotificationRegisterDto): Promise<SupplierModel | void> {
-      const user: SupplierModel = await this._supplierRepository.listById(_id)
-      if (!user) {
-        throw new BadRequestException('Usuário não encontrado, não foi possivel cadastrar essa notificação!');
-      }
+    async registerByBidCreation(_id: string , dto: NotificationRegisterDto): Promise<UserModel[] | void> {
+       
+        const user: UserModel[] = await this._userRepository.getUserBySupplierId(_id)
+     
+        for (let i = 0; i < user.length; i ++ ) {
+            const result = await this._notificationRepository.register(dto);
+            if (!result)
+                throw new BadRequestException('Não foi possivel cadastrar essa notificação!');
+            
+                await this._userRepository.updateNotifications(user[i]._id, result)
+            
+            
+        }
 
-        const result = await this._notificationRepository.register(dto);
-        if (!result)
-            throw new BadRequestException('Não foi possivel cadastrar essa notificação!');
         
-        
-        await this._supplierRepository.updateNotifications(_id, result)
-    
         return user;
 
     }

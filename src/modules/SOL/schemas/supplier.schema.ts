@@ -16,7 +16,7 @@ export class Supplier {
   @Prop({ required: true, unique: true })
   cpf: string;
 
-  @Prop({ required: false, type: Boolean })
+  @Prop({ required: true, type: Boolean, default: false })
   blocked: boolean;
 
   @Prop({ required: false, type: String })

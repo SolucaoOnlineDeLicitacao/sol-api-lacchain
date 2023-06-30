@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ContractStatusEnum } from "../enums/contract-status.enum";
+import { ProposalModel } from "../models/proposal.model";
 
 export abstract class ContractRegisterDto {
 
@@ -23,8 +24,7 @@ export abstract class ContractRegisterDto {
     @ApiProperty({ type: String, enum: ContractStatusEnum })
     status: ContractStatusEnum;
 
-    @ApiProperty({ type: Array })
-    proposal_id: string[];
+    proposal_id: ProposalModel;
 
     @ApiProperty({ type: String })
     association_id: string;

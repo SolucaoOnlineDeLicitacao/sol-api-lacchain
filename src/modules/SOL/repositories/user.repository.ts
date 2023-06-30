@@ -41,7 +41,17 @@ export class UserRepository {
 
     async getById(_id: string): Promise<UserModel> {
         return await this._model
-            .findById({ _id }).populate('association');
+            .findById({ _id }).populate('association').populate('supplier');
+    }
+
+    async getByIdPopulate(_id: string): Promise<UserModel> {
+        return await this._model
+            .findById({ _id }).populate('association').populate('supplier');
+    }
+
+    async getUserBySupplierId(_id: string): Promise<UserModel[]> {
+        return await this._model
+            .find({ supplier: _id }).populate('association');
      
     }
 
@@ -50,7 +60,7 @@ export class UserRepository {
     }
 
     async register(dto: UserRegisterRequestDto): Promise<UserModel> {
-        const data = await new this._model(dto);
+        const data = await new this._model(dto)
         return data.save();
     }
 

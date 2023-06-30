@@ -7,7 +7,7 @@ import { Agreement } from "../schemas/agreement.schema";
 
 @Injectable()
 export class AgreementRepository {
-  constructor(@InjectModel(Agreement.name) private readonly _model: Model<AgreementModel>) {}
+  constructor(@InjectModel(Agreement.name) private readonly _model: Model<AgreementModel>) { }
 
   async findById(id: string): Promise<AgreementModel> {
     return await this._model.findOne({ _id: id }).populate('reviewer').populate('workPlan').populate('association');
@@ -23,14 +23,31 @@ export class AgreementRepository {
   }
 
   async findAll(): Promise<AgreementModel[]> {
-    return await this._model.find().populate('reviewer').populate('workPlan').populate('association');
+    return await this._model.find().populate('reviewer').populate('association').populate(
+      {
+        path: "workPlan",
+        populate: {
+          path: "product",
+          populate: {
+            path: "costItems",
+            populate: {
+              path: "category"
+            }
+          }
+        }
+      }
+    );
+  }
+
+  async findForAssociation(associationId: string): Promise<AgreementModel[]> {
+    return await this._model.find({ association: { _id: associationId } }).populate('reviewer').populate('workPlan').populate('association');
   }
 
   async update(id: string, dto: any): Promise<AgreementModel> {
-    return await this._model.findByIdAndUpdate({ _id: id }, { 
+    return await this._model.findByIdAndUpdate({ _id: id }, {
       $set: {
         ...dto
       }
-     }, { new: true });
+    }, { new: true });
   }
 }

@@ -19,19 +19,23 @@ import { UserInterface } from '../interfaces/user.interface';
 import { UserModel } from '../models/user.model';
 import { UserListByTypeResponseDto } from '../dtos/user-list-by-type-response.dto';
 import { UserUpdateByIdRequestDto } from '../dtos/user-update-by-id-request.dto';
+import { SupplierService } from './supplier.service';
+import { AssociationService } from './association.service';
 
 @Injectable()
 export class UserService {
   constructor(
 
     private readonly _userRepository: UserRepository,
-  
+    private readonly _supplierService: SupplierService,
+    private readonly _associationService: AssociationService,
     private readonly _verificationService: VerificationService,
   ) { }
 
   async getById(_id: string): Promise<UserGetResponseDto> {
+    console.log('id', _id)
     const result = await this._userRepository.getById(_id);
-    
+
     return new UserGetResponseDto(
       result._id,
       result.name,
@@ -46,6 +50,12 @@ export class UserService {
       result.roles,
       result.notification_list
     );
+
+  }
+
+  async getUserBySupplierId(_id: string): Promise<UserModel[]> {
+    const result = await this._userRepository.getUserBySupplierId(_id);
+    return result
 
   }
 
@@ -93,18 +103,34 @@ export class UserService {
     dto: UserRegisterRequestDto,
   ): Promise<UserRegisterResponseDto> {
 
-    if(dto.phone){
+    if (dto.phone) {
       const userByPhone = await this._userRepository.getByPhone(dto.phone);
-      if(userByPhone) {
+      if (userByPhone) {
         throw new BadRequestException('Esse telefone ja foi cadastrado!');
       }
     }
 
-    if(dto.document){
+    if (dto.document) {
       const userByDocument = await this._userRepository.getByDocument(dto.document);
-      if(userByDocument) {
+      if (userByDocument) {
         throw new BadRequestException('Esse CPF/CNPJ ja foi cadastrado!');
       }
+    }
+
+    if (dto.supplier) {
+      const userBySupplier = await this._supplierService.listById(dto.supplier);
+      if (!userBySupplier) {
+        throw new BadRequestException('Esse fornecedor não existe!');
+      }
+      dto.supplier = userBySupplier as any;
+    }
+
+    if (dto.association) {
+      const userByAssociation = await this._associationService.getById(dto.association);
+      if (!userByAssociation) {
+        throw new BadRequestException('Essa associação não existe!');
+      }
+      dto.association = userByAssociation as any;
     }
 
     dto.status = UserStatusEnum.inactive;
@@ -117,7 +143,7 @@ export class UserService {
     return new UserRegisterResponseDto(
       result._id,
       result.email,
-   
+
     );
   }
 
@@ -215,7 +241,7 @@ export class UserService {
           iterator.document,
           iterator.office,
           iterator.association,
-          iterator.supplier,
+          iterator?.supplier?._id.toString(),
           iterator.roles
         ))
     }

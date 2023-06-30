@@ -12,8 +12,8 @@ export class ModelContract {
     @Prop({ required: true, enum: Object.keys(ModelContractStatusEnum), default: ModelContractStatusEnum.ativo })
     status: ModelContractStatusEnum;
 
-    @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: Bids.name })
-    bid: Bids;
+    @Prop({ type: String })
+    classification: string;
 
     @Prop({ type: String })
     contract: string;

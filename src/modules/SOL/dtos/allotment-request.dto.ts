@@ -29,4 +29,6 @@ export abstract class AllotmentRequestDto {
 
     @ApiProperty({ enum: AllotmentStatusEnum, type: String })
     status:AllotmentStatusEnum;
+
+    _id?: string;
 }

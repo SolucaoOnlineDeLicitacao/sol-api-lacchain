@@ -4,6 +4,7 @@ import { Bids } from "./bids.schema";
 import * as mongoose from 'mongoose';
 import { Allotment } from "./allotment.schema";
 import { User } from "./user.schema";
+import { ValueForAllotmentInterface } from "../interfaces/value-for-allotment.interface";
 
 @Schema({ timestamps: true, collection: Proposal.name.toLowerCase() })
 export class Proposal {
@@ -17,8 +18,6 @@ export class Proposal {
     @Prop({ required: true, type: Boolean, default: false })
     supplier_accept: boolean;
 
-   
-
     @Prop({ required: true, enum: Object.keys(ProposalStatusEnum), default: ProposalStatusEnum.aguardando1 })
     status: ProposalStatusEnum;
 
@@ -31,8 +30,8 @@ export class Proposal {
     @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: Bids.name })
     bid: Bids;
 
-    @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: Allotment.name })
-    allotment: Allotment;
+    @Prop({ required: false, type: [{ type: mongoose.Schema.Types.ObjectId, ref: Allotment.name }] })
+    allotment: Allotment[];
 
     @Prop({ required: false, type: String })
     file: string;
@@ -63,6 +62,12 @@ export class Proposal {
 
     @Prop({ required: false, type: Date })
     refusedAt: Date;
+
+    @Prop({ required: false, type: Number })
+    freight: number;
+
+    @Prop({ required: false, type: [{ type: mongoose.Schema.Types.Array }] })
+    totalValueForAllotment: ValueForAllotmentInterface[];
 }
 
 export const ProposaltSchema = SchemaFactory.createForClass(Proposal);

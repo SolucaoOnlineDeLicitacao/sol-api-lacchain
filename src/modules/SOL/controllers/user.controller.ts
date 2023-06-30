@@ -127,6 +127,36 @@ export class UserController {
     }
   }
 
+  @Get('get-users-by-supplier/:_id')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getUserBySupplierId(
+    @Param('_id') _id: string,
+  ) {
+
+    try {
+
+      const response = await this.userService.getUserBySupplierId(_id);
+
+      return new ResponseDto(
+        true,
+        response,
+        null,
+      );
+
+
+    } catch (error) {
+      this.logger.error(error.message);
+
+      throw new HttpException(
+        new ResponseDto(false, null, [error.message]),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+
   @Get('list-by-type/:type')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)

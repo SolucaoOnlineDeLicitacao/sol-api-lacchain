@@ -69,4 +69,6 @@ export abstract class BideRegisterDto {
 
     agreement: AgreementInterface;
 
+    additionalDocuments:string[];
+
 }

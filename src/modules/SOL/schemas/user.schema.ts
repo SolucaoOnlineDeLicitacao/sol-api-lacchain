@@ -5,6 +5,7 @@ import { UserTypeEnum } from '../enums/user-type.enum';
 import { UserRolesEnum } from "../enums/user-roles.enum";
 import { Association } from './association.schema';
 import { Notification } from './notification.schema';
+import { Supplier } from './supplier.schema';
 
 @Schema({ timestamps: true, collection: User.name.toLowerCase() })
 export class User {
@@ -39,8 +40,11 @@ export class User {
     @Prop({ required: false,  type: mongoose.Schema.Types.ObjectId, ref: Association.name  })
     association: Association;
 
-    @Prop({ required: false })
-    supplier: string;
+    @Prop({ required: false, type:mongoose.Schema.Types.ObjectId, ref: Supplier.name})
+    supplier: Supplier;
+    
+    // @Prop({ required: false })
+    // supplier: string;
 
     @Prop({ required: false, enum: Object.keys(UserRolesEnum) })
     roles: UserRolesEnum;

@@ -66,6 +66,14 @@ import { NotificationtController } from './controllers/notification.controller';
 import { NotificationService } from './services/notification.service';
 import { NotificationRepository } from './repositories/notification.repository';
 import { FileRepository } from './repositories/file.repository';
+import { DashboardService } from './services/dashboard.service';
+import { DashboardController } from './controllers/dashboard.controller';
+import { ReportService } from './services/report.service';
+import { ReportController } from './controllers/report.controller';
+import { ReportRepository } from './repositories/report.repository';
+import { EndPointsService } from './services/endpoints.service';
+import { EndPointsRepository } from './repositories/endpoints.repository';
+import { EndPointsController } from './controllers/endpoints.controller';
 @Module({
     imports: [
         PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -105,7 +113,10 @@ import { FileRepository } from './repositories/file.repository';
         AgreementController,
         WorkPlanController,
         AllotmentController,
-        NotificationtController
+        NotificationtController,
+        DashboardController,
+        ReportController,
+        EndPointsController
     ],
     providers: [
         JwtStrategy,
@@ -153,6 +164,11 @@ import { FileRepository } from './repositories/file.repository';
         NotificationService,
         NotificationRepository,
         FileRepository,
+        DashboardService,
+        ReportService,
+        ReportRepository,
+        EndPointsService,
+        EndPointsRepository
     ],
     exports: [
         AuthenticationService,

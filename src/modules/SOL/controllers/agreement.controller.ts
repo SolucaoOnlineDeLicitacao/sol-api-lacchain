@@ -24,13 +24,14 @@ import { FuncoesGuard } from "src/shared/guards/funcoes.guard";
 import { UserTypeEnum } from "../enums/user-type.enum";
 import { Funcoes } from "src/shared/decorators/function.decorator";
 import { WorkPlanWorkPlanRequestDto } from "../dtos/work-plan-add-work-plan-request.dto";
+import { JwtPayload } from "src/shared/interfaces/jwt-payload.interface";
 
 @ApiTags("conveios")
 @Controller("convenios")
 export class AgreementController {
   private readonly _logger = new Logger(AgreementController.name);
 
-  constructor(private _airdropService: AgreementService) {}
+  constructor(private _airdropService: AgreementService) { }
 
   @Get()
   @HttpCode(200)
@@ -40,6 +41,26 @@ export class AgreementController {
   async get() {
     try {
       const response = await this._airdropService.findAll();
+
+      return new ResponseDto(true, response, null);
+    } catch (error) {
+      throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get('for-association')
+  @HttpCode(200)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, FuncoesGuard)
+  @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+  async getForAssociation(
+    @Req() request,
+  ) {
+    try {
+
+      const payload: JwtPayload = request.user;
+
+      const response = await this._airdropService.findForAssociation(payload.userId,);
 
       return new ResponseDto(true, response, null);
     } catch (error) {

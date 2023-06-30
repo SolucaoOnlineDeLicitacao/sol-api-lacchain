@@ -8,6 +8,7 @@ import { ContractUpdateDto } from "../dtos/contract-update-request.dto";
 import { FuncoesGuard } from "src/shared/guards/funcoes.guard";
 import { UserTypeEnum } from "../enums/user-type.enum";
 import { Funcoes } from "src/shared/decorators/function.decorator";
+import { ContractUpdateStatusItemDto } from "../dtos/contract-update-status-item-request.dto";
 
 @ApiTags('contract')
 @Controller('contract')
@@ -105,6 +106,36 @@ export class ContractController {
         }
     }
 
+    @Get('get-by-bid/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async getByBidId(
+        @Param('_id') _id: string,
+    ) {
+
+        try {
+
+            const response = await this.contractService.listByBidId(_id);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+
     @Put('update/:_id')
     @HttpCode(200)
     @UseGuards(JwtAuthGuard)
@@ -117,6 +148,36 @@ export class ContractController {
         try {
 
             const response = await this.contractService.updateStatus(_id, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Put('update-itens/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async updateStatusItens(
+        @Param('_id') _id: string,
+        @Body() dto: ContractUpdateStatusItemDto,
+    ) {
+
+        try {
+
+            const response = await this.contractService.updateStatusItens(_id, dto);
 
             return new ResponseDto(
                 true,
@@ -166,7 +227,36 @@ export class ContractController {
         }
     }
 
+    @Get('contract-pdf/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao, UserTypeEnum.fornecedor)
+    @ApiBearerAuth()
+    async contractPdf(
+        @Param('_id') _id: string,
+    ) {
 
+        try {
+
+            const response = await this.contractService.contractPdfDownload(_id);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+    
 
     @Put('sing-supplier/:_id')
     @HttpCode(200)

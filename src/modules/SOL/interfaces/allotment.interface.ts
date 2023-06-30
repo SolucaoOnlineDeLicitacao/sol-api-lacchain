@@ -1,6 +1,7 @@
 import { Proposal } from "../schemas/proposal.schema";
 import { Items } from "../schemas/items.schema";
 import { AllotmentStatusEnum } from "../enums/allotment-status.enum";
+import { ProposalInAllotmentInterface } from "./proposal-in-allotment.interface";
 
 export interface AllotmentInterface {
 
@@ -13,8 +14,8 @@ export interface AllotmentInterface {
 
     readonly quantity: string;
     readonly files: string;
-    readonly proposals: Proposal[];
     readonly add_item: Items[];
+    proposals: ProposalInAllotmentInterface[];
    
 
 }

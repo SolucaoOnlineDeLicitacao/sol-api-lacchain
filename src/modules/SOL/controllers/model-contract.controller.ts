@@ -80,6 +80,36 @@ export class ModelContractController {
         }
     }
 
+    
+    @Get('get-by-Bid/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async getByBidId(
+        @Param('_id') _id: string,
+    ) {
+
+        try {
+
+            const response = await this.modelContractService.getBidById(_id);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
     @Get('get-by-id/:_id')
     @HttpCode(200)
     @UseGuards(JwtAuthGuard)

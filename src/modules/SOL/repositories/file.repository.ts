@@ -23,7 +23,6 @@ export class FileRepository {
     }
 
     async download(filename: string): Promise<Buffer> {
-
         const pdf = await new Promise<Buffer>((resolve, reject) => {
 			fs.readFile(filename, {}, (err, data) => {
 				if (err) {

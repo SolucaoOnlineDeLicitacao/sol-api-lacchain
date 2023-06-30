@@ -2,9 +2,9 @@ import { BidTypeEnum } from "../enums/bid-type.enum";
 import { BidModalityEnum } from "../enums/bid-modality.enum";
 import { BidStatusEnum } from "../enums/bid-status.enum";
 import { UserInterface } from "./user.interface";
-import { AllotmentInterface } from "./allotment.interface";
 import { AgreementInterface } from "./agreement.interface";
-import { SupplierInterface } from "./supplier.interface";
+import { AllotmentModel } from "../models/allotment.model";
+import { SupplierModel } from "../models/supplier.model";
 
 export interface BidInterface {
 
@@ -22,8 +22,8 @@ export interface BidInterface {
     readonly bid_type?: BidTypeEnum;
     readonly modality?: BidModalityEnum;
     readonly aditional_site?: string;
-    readonly add_allotment?: AllotmentInterface[];
-    readonly invited_suppliers?: SupplierInterface[];
+    readonly add_allotment?: AllotmentModel[];
+    readonly invited_suppliers?: SupplierModel[];
     readonly bid_count: string;
     readonly editalFile?: string;
     readonly ataFile?: string;
@@ -33,5 +33,8 @@ export interface BidInterface {
     readonly association: UserInterface;
 
     readonly proofreader?: UserInterface;
+
+    readonly additionalDocuments: string[];
+    readonly createdAt: Date;
 
 }

@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { WorkPlanRepository } from "../repositories/work-plan.repository";
-import { WorkPlanInterface } from "../interfaces/agreement.interface";
 import { WorkPlanRegisterRequestDto } from "../dtos/work-plan-register-request.dto";
 import { CostItemsService } from "./cost-items.service";
 import { WorkPlanModel } from "../models/work-plan.model";
@@ -12,15 +11,15 @@ export class WorkPlanService {
     private readonly _costItemsService: CostItemsService
   ) {}
 
-  async findById(id: string): Promise<WorkPlanInterface> {
+  async findById(id: string): Promise<WorkPlanModel> {
     return await this._workPlanRepository.findById(id);
   }
 
-  async deleteById(id: string): Promise<WorkPlanInterface> {
+  async deleteById(id: string): Promise<WorkPlanModel> {
     return await this._workPlanRepository.deleteById(id);
   }
 
-  async register(dto: WorkPlanRegisterRequestDto): Promise<WorkPlanInterface> {
+  async register(dto: WorkPlanRegisterRequestDto): Promise<WorkPlanModel> {
     const costItems = await this._costItemsService.listByIds(dto.product.map(item => item.costItems));
 
     for (let i = 0; i < dto.product.length; i++) {
@@ -33,7 +32,7 @@ export class WorkPlanService {
     return result;
   }
 
-  async findAll(): Promise<WorkPlanInterface[]> {
+  async findAll(): Promise<WorkPlanModel[]> {
     const result = await this._workPlanRepository.findAll();
 
     return result;
@@ -45,7 +44,7 @@ export class WorkPlanService {
     return result;
   }
 
-  async update(id: string, dto: any): Promise<WorkPlanInterface> {
+  async update(id: string, dto: any): Promise<WorkPlanModel> {
     return await this._workPlanRepository.update(id, dto);
   }
 }

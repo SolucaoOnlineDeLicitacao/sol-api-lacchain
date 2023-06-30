@@ -23,7 +23,7 @@ export class ModelContractRepository {
             $set: {
                 name: dto.name,
                 status: dto.status,
-                bid: dto.bid,
+                classification: dto.classification,
                 contract: dto.contract
             }
         }, {new: true });
@@ -35,6 +35,14 @@ export class ModelContractRepository {
 
     async getById(_id: string): Promise<ModelContract> {
         return await this._model.findOne({ _id });
+    }
+
+    async getByBidId(_id: string): Promise<ModelContract> {
+        return await this._model.findOne({ bid: _id });
+    }
+
+    async getByClassification(classification: string): Promise<ModelContract> {
+        return await this._model.findOne({ classification: classification });
     }
 
     async deleteById(_id: string) {

@@ -14,6 +14,8 @@ import { ProposalAssociationAcceptUpdateDto } from "../dtos/proposal-accept-asso
 import { JwtPayload } from "src/shared/interfaces/jwt-payload.interface";
 import { ProposalRefusedRequestDto } from "../dtos/proposal-refused-request.dto";
 import { ProposalNotificationInterface } from "../interfaces/proposal-notification-dto";
+import { ProposalUpdateValues } from "../dtos/proposal-update-values-request.dto";
+import { BidService } from "../services/bid.service";
 
 @ApiTags('proposal')
 @Controller('proposal')
@@ -23,6 +25,7 @@ export class ProposalController {
 
     constructor(
         private readonly proposalService: ProposalService,
+        private readonly bidService: BidService,
     ) { }
 
     @Post('register')
@@ -90,8 +93,8 @@ export class ProposalController {
 
     @Get('get-by-id/:_id')
     @HttpCode(200)
-    @UseGuards(JwtAuthGuard, FuncoesGuard)
-    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    @UseGuards(JwtAuthGuard)
+    // @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
     @ApiBearerAuth()
     async getById(
         @Param('_id') _id: string,
@@ -151,7 +154,7 @@ export class ProposalController {
     @Get('get-proposal-accepted-bid/:_id')
     @HttpCode(200)
     @UseGuards(JwtAuthGuard, FuncoesGuard)
-    @Funcoes(UserTypeEnum.administrador)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.fornecedor)
     @ApiBearerAuth()
     async getProposalAcceptedBid(
         @Param('_id') _id: string,
@@ -159,7 +162,43 @@ export class ProposalController {
 
         try {
 
-            const response = await this.proposalService.getProposalAcceptByBid(_id);
+            let response = await this.proposalService.getProposalAcceptByBid(_id);
+
+            if (!response) {
+                response = null
+            }
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Get('verify-proposal-by-user/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async verifyProposalByUser(
+        @Req() request,
+        @Param('_id') _id: string,
+    ) {
+
+        try {
+
+            const payload: JwtPayload = request.user;
+
+            const response = await this.proposalService.getByUserInBid(payload.userId, _id);
 
             return new ResponseDto(
                 true,
@@ -405,13 +444,33 @@ export class ProposalController {
         @Param('_id') _id: string,
         @Req() request,
     ) {
-
         try {
-            
-
             const payload: JwtPayload = request.user;
 
             const response = await this.proposalService.acceptProposal(_id, payload.userId, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Put('update-values/:id')
+    @HttpCode(201)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @ApiBearerAuth()
+    async updateValues(@Param('id') _id: string, @Body() dto: ProposalUpdateValues) {
+        try {
+            const response = await this.proposalService.updateValues(_id, dto);
 
             return new ResponseDto(
                 true,
@@ -430,5 +489,27 @@ export class ProposalController {
         }
     }
 
+    @Post('send-tie-breaker/:id')
+    @HttpCode(201)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async sendTieBreaker(@Param('id') _id: string) {
+        try {
+            const response = await this.bidService.sendTieBreaker(_id);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
 
 }

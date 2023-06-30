@@ -6,6 +6,10 @@ import { SupplierService } from "../services/supplier.service";
 import { SupplierRegisterDto } from "../dtos/supplier-register-request.dto";
 import { SupplierUpdateStatusDto } from "../dtos/supplier-update-status-request.dto";
 import { SupplierGroupIdUpdateDto } from "../dtos/supplier-group-id-update.dto";
+import { FuncoesGuard } from "src/shared/guards/funcoes.guard";
+import { Funcoes } from "src/shared/decorators/function.decorator";
+import { UserTypeEnum } from "../enums/user-type.enum";
+import { SupplierRegisterBlockRequestDto } from "../dtos/supplier-register-block-request.dt";
 
 @ApiTags('supplier')
 @Controller('supplier')
@@ -22,7 +26,7 @@ export class SupplierController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     async register(
-  
+
         @Body() dto: SupplierRegisterDto,
     ) {
 
@@ -179,6 +183,68 @@ export class SupplierController {
         try {
 
             const response = await this.supplierService.updateGroup(_id, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Put('block/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador)
+    @ApiBearerAuth()
+    async block(
+        @Param('_id') _id: string,
+        @Body() dto: SupplierRegisterBlockRequestDto
+    ) {
+
+        try {
+
+            const response = await this.supplierService.block(_id, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Put('unblock/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador)
+    @ApiBearerAuth()
+    async unblock(
+        @Param('_id') _id: string,
+        @Body() dto: SupplierRegisterBlockRequestDto
+    ) {
+
+        try {
+
+            const response = await this.supplierService.unblock(_id, dto);
 
             return new ResponseDto(
                 true,

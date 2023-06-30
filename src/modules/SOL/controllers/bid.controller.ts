@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Put, Req, Res, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Put, Req, Res, UploadedFiles, UseGuards, UseInterceptors } from "@nestjs/common";
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/shared/guards/jwt-auth.guard";
 import { ResponseDto } from "src/shared/dtos/response.dto";
 import { UserController } from "./user.controller";
@@ -12,6 +12,7 @@ import { FuncoesGuard } from "src/shared/guards/funcoes.guard";
 import { Funcoes } from "src/shared/decorators/function.decorator";
 import { UserTypeEnum } from "../enums/user-type.enum";
 import { BidAddProposalDto } from "../dtos/bid-add-proposal.dto";
+import { AnyFilesInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 
 @ApiTags('bid')
 @Controller('bid')
@@ -28,18 +29,20 @@ export class BidController {
     @UseGuards(JwtAuthGuard, FuncoesGuard)
     @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
     @ApiBearerAuth()
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(AnyFilesInterceptor({ limits: { fieldSize: 50 * 1024 * 1024 } }))
     async register(
         @Req() request,
         @Body() dto: BideRegisterDto,
+        @UploadedFiles() files: Array<Express.Multer.File>
     ) {
 
         try {
 
-
             const payload: JwtPayload = request.user;
 
-            const response = await this.bidsService.register(payload.userId, dto);
-           
+            const response = await this.bidsService.register(payload.userId, dto, files);
+
             return new ResponseDto(
                 true,
                 response,
@@ -75,6 +78,60 @@ export class BidController {
             );
 
 
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Get('list-for-supplier')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async listForSupplier(
+        @Req() request,
+    ) {
+
+        try {
+
+            const payload: JwtPayload = request.user;
+
+            const response = await this.bidsService.listForSupplier(payload.userId);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Get('list-for-proposal-supplier')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async listForProposalSupplier(@Req() request) {
+        try {
+            const payload: JwtPayload = request.user;
+
+            const response = await this.bidsService.listForProposalSupplier(payload.userId);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
         } catch (error) {
             this.logger.error(error.message);
 
@@ -143,6 +200,36 @@ export class BidController {
         }
     }
 
+    @Get('list-by-association')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async listBydAssociation(
+        @Req() request,
+    ) {
+
+        try {
+
+            const payload: JwtPayload = request.user;
+
+            const response = await this.bidsService.listByAssociation(payload.userId);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
 
 
 
@@ -222,7 +309,7 @@ export class BidController {
 
         try {
 
-   
+
 
             const response = await this.bidsService.addProposal(_id, dto);
 
@@ -272,15 +359,38 @@ export class BidController {
 
     @Get("download/:id/:type")
     @HttpCode(200)
-    @UseGuards(JwtAuthGuard, FuncoesGuard)
-    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+    @UseGuards(JwtAuthGuard)
+    // @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
     async download(@Res() response, @Param("id") id: string, @Param("type") type: string) {
         try {
-            const result = await this.bidsService.downloadFile(id,type)
-            response.send(result);
+            const result = await this.bidsService.downloadFile(id, type)
+           
+           response.send(result);
+          
+
         } catch (error) {
 
-        throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
+            throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @Get("bid-pdf/:id/:type")
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @ApiBearerAuth()
+    async bidPdf(@Param("id") id: string, @Param("type") type: string) {
+        try {
+            const result = await this.bidsService.bidPdfDownload(id, type)
+            return new ResponseDto(
+                true,
+                result,
+                null,
+            );
+
+        } catch (error) {
+
+            throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -9,21 +9,22 @@ import { Agreement, AgreementSchema } from "../SOL/schemas/agreement.schema";
 import { Tfa, TfaSchema } from "../SOL/schemas/tfa-schema";
 import { User, UserSchema } from "../SOL/schemas/user.schema";
 import { Verification, VerificationSchema } from "../SOL/schemas/verification.schema";
-import { Association, AssociationSchema } from '../SOL/schemas/association.schema';
-import { CostItems, CostItemsSchema } from '../SOL/schemas/cost-items.schema';
-import { Bids, BidsSchema } from '../SOL/schemas/bids.schema';
-import { Group, GroupSchema } from '../SOL/schemas/group.schema';
-import { Products, ProductsSchema } from '../SOL/schemas/product.schema';
-import { Category, CategorySchema } from '../SOL/schemas/category.schema';
-import { Supplier, SupplierSchema } from '../SOL/schemas/supplier.schema';
-import { Contract } from 'ethers';
-import { ContractSchema } from '../SOL/schemas/contract.schema';
-import { Proposal, ProposaltSchema } from '../SOL/schemas/proposal.schema';
+import { Association, AssociationSchema } from "../SOL/schemas/association.schema";
+import { CostItems, CostItemsSchema } from "../SOL/schemas/cost-items.schema";
+import { Bids, BidsSchema } from "../SOL/schemas/bids.schema";
+import { Group, GroupSchema } from "../SOL/schemas/group.schema";
+import { Products, ProductsSchema } from "../SOL/schemas/product.schema";
+import { Category, CategorySchema } from "../SOL/schemas/category.schema";
+import { Supplier, SupplierSchema } from "../SOL/schemas/supplier.schema";
+import { Contract } from "ethers";
+import { ContractSchema } from "../SOL/schemas/contract.schema";
+import { Proposal, ProposaltSchema } from "../SOL/schemas/proposal.schema";
 import { WorkPlan, WorkPlanSchema } from "../SOL/schemas/work-plan.schema";
 import { Allotment, AllotmentSchema } from "../SOL/schemas/allotment.schema";
 import { ModelContract, ModelContractSchema } from "../SOL/schemas/model-contract.schemay";
 import { Notification, NotificationSchema } from "../SOL/schemas/notification.schema";
-
+import { ReportGenerated, ReportGeneratedSchema } from "../SOL/schemas/report-generated.schema";
+import { EndPoints, EndPointsSchema } from "../SOL/schemas/endpoints.schema";
 
 @Module({
   imports: [
@@ -55,10 +56,10 @@ import { Notification, NotificationSchema } from "../SOL/schemas/notification.sc
       { name: WorkPlan.name, schema: WorkPlanSchema },
       { name: Allotment.name, schema: AllotmentSchema },
       { name: Notification.name, schema: NotificationSchema },
+      { name: ReportGenerated.name, schema: ReportGeneratedSchema },
+      { name: EndPoints.name, schema: EndPointsSchema },
     ]),
   ],
-  exports: [
-    MongooseModule,
-  ]
+  exports: [MongooseModule],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

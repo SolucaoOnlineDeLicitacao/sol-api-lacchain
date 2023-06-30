@@ -12,7 +12,7 @@ export abstract class ModelContractUpdateDto {
     status: ModelContractStatusEnum;
 
     @ApiProperty({ type: String})
-    bid: string;
+    classification: string;
     
     @ApiProperty({ type: String })
     contract: string;

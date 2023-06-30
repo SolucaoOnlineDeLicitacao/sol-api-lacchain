@@ -69,6 +69,12 @@ export class Bids {
   @Prop({ required: false, type: String})
   ataFile: string;
 
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: User.name})
+  association: User;
+
+  @Prop({ required: false, type: [String] })
+  additionalDocuments:string[];
+
 }
 
 export const BidsSchema = SchemaFactory.createForClass(Bids);

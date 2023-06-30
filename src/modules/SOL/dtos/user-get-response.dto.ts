@@ -1,4 +1,6 @@
 import { NotificationInterface } from "../interfaces/notification.interface";
+import { AssociationModel } from "../models/association.model";
+import { SupplierModel } from "../models/supplier.model";
 
 export class UserGetResponseDto {
     constructor(
@@ -10,8 +12,8 @@ export class UserGetResponseDto {
         public document: string,
         public profilePicture?: string,
         public office?: string,
-        public association?: string,
-        public supplier?: string,
+        public association?: AssociationModel,
+        public supplier?: SupplierModel,
         public roles?: string,
         public notification_list?: NotificationInterface[]
         

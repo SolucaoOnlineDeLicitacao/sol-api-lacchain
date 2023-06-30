@@ -58,11 +58,16 @@ export class AssociationRepository {
     }
 
     async getById(_id: string): Promise<AssociationModel> {
-        return await this._model.findOne({ _id });
+        const result = await this._model.findOne({ _id });
+        return result;
     }
 
     async deleteById(_id: string) {
         return await this._model.findOneAndDelete({ _id });
+    }
+
+    async getByCnpj(cnpj: string): Promise<AssociationModel> {
+        return await this._model.findOne({ cnpj });
     }
 
 }

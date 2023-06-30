@@ -31,5 +31,7 @@ export abstract class SupplierRegisterDto {
 
     categories: CategoryInterface[];
 
+    blocked: boolean;
+
 
 }

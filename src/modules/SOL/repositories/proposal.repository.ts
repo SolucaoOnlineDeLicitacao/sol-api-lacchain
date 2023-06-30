@@ -14,6 +14,7 @@ import { ProposalWinRequestDto } from "../dtos/proposal-win-request.dto";
 import { ProposalRefusedRequestDto } from "../dtos/proposal-refused-request.dto";
 import { ProposalAcceptedRequestDto } from "../dtos/proposal-accepted-request.dto";
 import { ProposalStatusEnum } from "../enums/proposal-status.enum";
+import { ProposalUpdateValues } from "../dtos/proposal-update-values-request.dto";
 
 @Injectable()
 export class ProposalRepository {
@@ -22,7 +23,7 @@ export class ProposalRepository {
         @InjectModel(Proposal.name) private readonly _model: Model<ProposalModel>,
     ) { }
 
-    async register(dto: ProposalRegisterDto): Promise<any> {
+    async register(dto: ProposalRegisterDto): Promise<ProposalModel> {
         const data = await new this._model(dto);
         return data.save();
     }
@@ -80,6 +81,15 @@ export class ProposalRepository {
         }, { new: true });
     }
 
+    async updateListProposedWin(_ids: string[], dto: ProposalWinRequestDto): Promise<void> {
+        await this._model.updateMany({ _id: { $in: _ids } }, {
+            $set: {
+                proposalWin: dto.proposalWin,
+
+            }
+        }, { new: true });
+    }
+
     async refusedProposal(_id: string, dto: ProposalRefusedRequestDto): Promise<ProposalModel> {
         return await this._model.findOneAndUpdate({ _id }, {
             $set: {
@@ -97,6 +107,7 @@ export class ProposalRepository {
                 acceptedFornecedorAt: dto.acceptAt,
                 acceptedFornecedor: dto.acceptBy,
                 status: dto.status,
+                association_accept: true
             }
         }, { new: true });
     }
@@ -107,6 +118,7 @@ export class ProposalRepository {
                 acceptedRevisorAt: dto.acceptAt,
                 acceptedRevisor: dto.acceptBy,
                 status: dto.status,
+                supplier_accept: true
             }
         }, { new: true });
     }
@@ -116,13 +128,18 @@ export class ProposalRepository {
     }
 
     async listByBid(bidId: string): Promise<ProposalModel[]> {
-        const proposals = await this._model.find({ bid: { _id: bidId } }).populate('proposedBy').populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor');
-        const sortedProposals = proposals.sort((a, b) => Number(a.total_value) - Number(b.total_value));
-        return sortedProposals;
+        const proposals = await this._model.find({ bid: { _id: bidId } }).populate('proposedBy').populate({path:'proposedBy', populate:'supplier'}).populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor').populate('allotment').sort({ total_value: "descending" });
+        // const sortedProposals = proposals.sort((a, b) => Number(a.total_value) - Number(b.total_value));
+        return proposals;
+    }
+
+    async listByUser(proposedById: string): Promise<ProposalModel[]> {
+        const proposals = await this._model.find({ proposedBy: { _id: proposedById } }).populate('proposedBy').populate('allotment');
+        return proposals
     }
 
     async listByBidsWaiting(bidId: string): Promise<ProposalModel[]> {
-        const proposals = await this._model.find({ bid: { _id: bidId } }).populate('proposedBy').populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor');
+        const proposals = await this._model.find({ bid: { _id: bidId } }).populate('proposedBy').populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor').populate('allotment');
         if (proposals.length > 1) {
             const sortedProposals = proposals.sort((a, b) => Number(a.total_value) - Number(b.total_value));
             let response = []
@@ -146,16 +163,33 @@ export class ProposalRepository {
     }
 
     async list(): Promise<ProposalModel[]> {
-        return await this._model.find().populate('proposedBy').populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor')
+        return await this._model.find().populate('proposedBy').populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor').populate('allotment')
 
     }
 
     async getById(_id: string): Promise<ProposalModel> {
-        return await this._model.findOne({ _id }).populate('proposedBy').populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor')
+        return await this._model.findOne({ _id }).populate('proposedBy').populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor').populate('allotment')
     }
 
     async deleteById(_id: string) {
         return await this._model.findByIdAndUpdate({ _id }, { $set: { deleted: true } }, { new: true });
+    }
+
+    async updateValues(_id: string, dto: ProposalUpdateValues): Promise<ProposalModel> {
+        return await this._model.findOneAndUpdate(
+            { _id },
+            { $set: { total_value: dto.total_value, freight: dto.freight } },
+            { new: true }
+        );
+    }
+
+    async listProposalByUserSupplier(_id: string): Promise<ProposalModel[]> {
+        // return await this._model.find({proposedBy: {supplier: {_id:_id}}})
+        return await this._model.find().populate('proposedBy').populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor').populate('allotment').populate('bid')
+    }
+
+    async listProposalByBidTie(bidId: string): Promise<ProposalModel[]> {
+        return await this._model.find({ bid: { _id: bidId }, proposalWin:true }).populate('proposedBy').populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor').populate('allotment').populate('bid')
     }
 
 }
