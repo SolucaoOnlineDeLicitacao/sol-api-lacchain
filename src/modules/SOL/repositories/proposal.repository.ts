@@ -15,6 +15,7 @@ import { ProposalRefusedRequestDto } from "../dtos/proposal-refused-request.dto"
 import { ProposalAcceptedRequestDto } from "../dtos/proposal-accepted-request.dto";
 import { ProposalStatusEnum } from "../enums/proposal-status.enum";
 import { ProposalUpdateValues } from "../dtos/proposal-update-values-request.dto";
+import { ProposalReviewerAcceptUpdateDto } from "../dtos/proposal-accept-reviewer-update.dto";
 
 @Injectable()
 export class ProposalRepository {
@@ -70,6 +71,15 @@ export class ProposalRepository {
 
             }
         }, { new: true });
+    }
+    async updateAcceptReviewer(_id: string, dto: ProposalReviewerAcceptUpdateDto): Promise<ProposalModel> {
+        return await this._model.findOneAndUpdate({ _id }, {
+            $set: {
+                acceptedRevisorAt: dto.acceptedRevisorAt,
+                reviewer_accept: dto.reviewer_accept
+
+            }
+        }, { new: true }).populate('acceptedFornecedor');
     }
 
     async updateProposedWin(_id: string, dto: ProposalWinRequestDto): Promise<ProposalModel> {
@@ -128,7 +138,12 @@ export class ProposalRepository {
     }
 
     async listByBid(bidId: string): Promise<ProposalModel[]> {
-        const proposals = await this._model.find({ bid: { _id: bidId } }).populate('proposedBy').populate({path:'proposedBy', populate:'supplier'}).populate('refusedBy').populate('acceptedFornecedor').populate('acceptedRevisor').populate('allotment').sort({ total_value: "descending" });
+        const proposals = await this._model.find({ bid: { _id: bidId } })
+        .populate('proposedBy')
+        .populate({path:'proposedBy', populate:'supplier'})
+        .populate('refusedBy').populate('acceptedFornecedor')
+        .populate('acceptedRevisor').populate('allotment')
+        .sort({ total_value: "descending" });
         // const sortedProposals = proposals.sort((a, b) => Number(a.total_value) - Number(b.total_value));
         return proposals;
     }

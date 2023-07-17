@@ -55,4 +55,10 @@ export class CostItemsRepository {
         .populate('product');
     }
 
+    async getByName(name:string){
+        return await this._model.findOne({name: name})
+        .populate('category')
+        .populate('product');
+    }
+
 }

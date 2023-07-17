@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { ContractRepository } from "../repositories/contract.repository";
 import { ReportContractResponseDto } from "../dtos/report-contract.response.dto";
 import { BidRepository } from "../repositories/bid.repository";
@@ -119,7 +119,8 @@ export class ReportService {
                     reopened: 'Reaberta',
                     failed: 'Falhou',
                     canceled: 'Cancelada',
-                    tiebreaker: 'Aguardando Desempate'
+                    tiebreaker: 'Aguardando Desempate',
+                    returned: 'Devolvida'
                 }
                 responseBid.push({ bidCount: iterator.bid_count + '/' + iterator.createdAt.getFullYear(), classification: iterator.classification, start_at: iterator.start_at, end_at: iterator.end_at, status: statusPT[iterator.status] })
             }
@@ -386,4 +387,12 @@ export class ReportService {
         return base64String;
     }
 
+    async downloadReportGeneratedById(_id: string): Promise<any> {
+        const result = await this._reportRepository.getById(_id);
+
+        if (!result) {
+            throw new BadRequestException('Arquivo nao encontrado!');
+        }
+        return this._fileRepository.download(result.archive);
+    }
 }

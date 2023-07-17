@@ -24,7 +24,7 @@ export abstract class ContractRegisterDto {
     @ApiProperty({ type: String, enum: ContractStatusEnum })
     status: ContractStatusEnum;
 
-    proposal_id: ProposalModel;
+    proposal_id: ProposalModel[];
 
     @ApiProperty({ type: String })
     association_id: string;

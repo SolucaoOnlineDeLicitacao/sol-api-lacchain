@@ -27,7 +27,7 @@ export abstract class UserRegisterRequestDto {
     association: string;
 
     @ApiProperty({ type: String })
-    supplier: string;
+    supplier?: string;
 
     @ApiProperty({ type: String })
     roles: UserRolesEnum;

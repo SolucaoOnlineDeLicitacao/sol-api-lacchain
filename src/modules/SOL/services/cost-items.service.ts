@@ -84,4 +84,9 @@ export class CostItemsService {
       if (!result) throw new BadRequestException("Não foi possivel criar o item!");
     }
   }
+
+  async getByName(name: string): Promise<undefined | CostItemsModel> {
+    const result = await this._constItemsRepository.getByName(name);
+    return result;
+  }
 }

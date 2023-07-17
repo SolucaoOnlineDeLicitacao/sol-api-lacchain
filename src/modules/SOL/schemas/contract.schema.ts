@@ -43,8 +43,8 @@ export class Contract {
     @Prop({ required: true, enum: Object.keys(ContractStatusEnum), default: ContractStatusEnum.aguardando_assinaturas })
     status: ContractStatusEnum;
 
-    @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: Proposal.name })
-    proposal_id: Proposal;
+    @Prop({ required: false, type:[{type: mongoose.Schema.Types.ObjectId, ref: Proposal.name}] })
+    proposal_id: Proposal[];
 
     @Prop({ required: false, type: mongoose.Schema.Types.ObjectId, ref: Supplier.name })
     supplier_id: Supplier;

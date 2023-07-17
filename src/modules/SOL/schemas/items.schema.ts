@@ -12,6 +12,12 @@ export class Items {
     @Prop({ required: true, type: String })
     quantity: string;
 
+    @Prop({ required: true, type: String })
+    unitMeasure: string;
+    
+    @Prop({ required: true, type: String })
+    specification: string;
+
 }
 
 export const ItemsSchema = SchemaFactory.createForClass(Items);

@@ -8,5 +8,5 @@ export interface AddressInterface {
     readonly longitude: string;
     readonly complement: string;
     readonly referencePoint: string;
-    readonly number: string;
+    readonly number: string
 }

@@ -12,4 +12,10 @@ export abstract class ItemRequestDto {
     @ApiProperty({ type: String })
     quantity: string;
 
+    @ApiProperty({ type: String })
+    unitMeasure: string;
+
+    @ApiProperty({ type: String })
+    specification: string;
+
 }

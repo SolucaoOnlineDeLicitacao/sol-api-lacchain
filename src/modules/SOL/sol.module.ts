@@ -74,6 +74,9 @@ import { ReportRepository } from './repositories/report.repository';
 import { EndPointsService } from './services/endpoints.service';
 import { EndPointsRepository } from './repositories/endpoints.repository';
 import { EndPointsController } from './controllers/endpoints.controller';
+import { PlataformRepository } from './repositories/plataform.repository';
+import { PlataformController } from './controllers/plataform.controller';
+import { PlataformService } from './services/plataform.service';
 @Module({
     imports: [
         PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -116,7 +119,8 @@ import { EndPointsController } from './controllers/endpoints.controller';
         NotificationtController,
         DashboardController,
         ReportController,
-        EndPointsController
+        EndPointsController,
+        PlataformController
     ],
     providers: [
         JwtStrategy,
@@ -168,7 +172,10 @@ import { EndPointsController } from './controllers/endpoints.controller';
         ReportService,
         ReportRepository,
         EndPointsService,
-        EndPointsRepository
+        EndPointsRepository,
+        
+        PlataformService,
+        PlataformRepository
     ],
     exports: [
         AuthenticationService,

@@ -25,6 +25,8 @@ import { ModelContract, ModelContractSchema } from "../SOL/schemas/model-contrac
 import { Notification, NotificationSchema } from "../SOL/schemas/notification.schema";
 import { ReportGenerated, ReportGeneratedSchema } from "../SOL/schemas/report-generated.schema";
 import { EndPoints, EndPointsSchema } from "../SOL/schemas/endpoints.schema";
+import { Plataform, PlataformSchema } from "../SOL/schemas/plataform.schema";
+
 
 @Module({
   imports: [
@@ -58,6 +60,7 @@ import { EndPoints, EndPointsSchema } from "../SOL/schemas/endpoints.schema";
       { name: Notification.name, schema: NotificationSchema },
       { name: ReportGenerated.name, schema: ReportGeneratedSchema },
       { name: EndPoints.name, schema: EndPointsSchema },
+      {name:Plataform.name, schema: PlataformSchema}
     ]),
   ],
   exports: [MongooseModule],

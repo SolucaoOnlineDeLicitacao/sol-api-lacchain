@@ -6,5 +6,8 @@ export abstract class BidUpdateStatusRequestDto {
     @ApiProperty({ type: String, enum: BidStatusEnum })
     status: BidStatusEnum;
 
+    @ApiProperty({ type: String, required: false })
+    declined_reason: string;
+
     proofreader: UserInterface;
 }

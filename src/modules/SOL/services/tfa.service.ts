@@ -68,7 +68,8 @@ export class TfaService {
             dto.user.id,
             accessToken.accessToken,
             refreshToken.accessToken,
-            dto.user.type
+            dto.user.type,
+            dto.user.roles
         );
     }
 
@@ -109,7 +110,8 @@ export class TfaService {
             dto.user.id,
             accessToken.accessToken,
             refreshToken.accessToken,
-            dto.user.type
+            dto.user.type,
+            dto.user.roles
         );
     }
 

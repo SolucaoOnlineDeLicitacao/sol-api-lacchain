@@ -58,5 +58,9 @@ export class ProductService {
         return await this._productRepository.deleteById(_id);
     }
 
+    getByName(name: string): Promise<ProductModel> {
+        return this._productRepository.getByName(name);
+    }
+
 
 }

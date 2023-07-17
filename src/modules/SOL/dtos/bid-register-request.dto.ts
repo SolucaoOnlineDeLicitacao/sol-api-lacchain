@@ -65,6 +65,12 @@ export abstract class BideRegisterDto {
     @ApiProperty({ type: String })
     ataFile: string;
 
+    @ApiProperty({ type: String })
+    state: string;
+
+    @ApiProperty({ type: String })
+    city: string;
+
     association: UserInterface;
 
     agreement: AgreementInterface;

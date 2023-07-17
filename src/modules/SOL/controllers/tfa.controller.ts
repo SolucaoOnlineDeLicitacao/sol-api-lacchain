@@ -164,7 +164,8 @@ export class TfaController {
             user.id,
             accessToken.accessToken,
             refreshToken.accessToken,
-            user.type
+            user.type,
+            user.roles
           ),
           null,
         );

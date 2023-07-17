@@ -20,6 +20,8 @@ export interface BidInterface {
     readonly days_to_delivery: string;
     readonly local_to_delivery: string;
     readonly bid_type?: BidTypeEnum;
+    readonly declined_reason?: string;
+
     readonly modality?: BidModalityEnum;
     readonly aditional_site?: string;
     readonly add_allotment?: AllotmentModel[];
@@ -27,6 +29,8 @@ export interface BidInterface {
     readonly bid_count: string;
     readonly editalFile?: string;
     readonly ataFile?: string;
+    readonly state?: string;
+    readonly city?: string;
 
     readonly status: BidStatusEnum;
 

@@ -22,4 +22,9 @@ export class ReportRepository {
             .find()
             .populate("generatedBy")
     }
+
+    async getById(_id: string): Promise<ReportGeneratedModel> {
+        return await this._model
+            .findById({ _id })
+    }
 }

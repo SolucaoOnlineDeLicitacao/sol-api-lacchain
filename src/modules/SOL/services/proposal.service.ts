@@ -25,9 +25,14 @@ import { ContractRegisterDto } from "../dtos/contract-register-request.dto";
 import { ContractStatusEnum } from "../enums/contract-status.enum";
 import { ContractService } from "./contract.service";
 import { ProposalUpdateValues } from "../dtos/proposal-update-values-request.dto";
-import { ProposalInAllotmentInterface, updateProposalInAllotmentInterface } from "../interfaces/proposal-in-allotment.interface";
+import {
+  ProposalInAllotmentInterface,
+  updateProposalInAllotmentInterface,
+} from "../interfaces/proposal-in-allotment.interface";
 import { MutableObject } from "src/shared/interfaces/mutable-object.interface";
 import { AllotmentModel } from "../models/allotment.model";
+import { BidService } from "./bid.service";
+import { ProposalReviewerAcceptUpdateDto } from "../dtos/proposal-accept-reviewer-update.dto";
 
 @Injectable()
 export class ProposalService {
@@ -39,8 +44,9 @@ export class ProposalService {
     private readonly _allotmentService: AllotmentService,
     private readonly _bidRepository: BidRepository,
     private readonly _userRepository: UserRepository,
-    private readonly _contractRepository: ContractService,
-    private readonly _notificationService: NotificationService
+    private readonly _contractService: ContractService,
+    private readonly _notificationService: NotificationService,
+    private readonly _bidService: BidService
   ) {}
 
   async register(proposedById: string, dto: ProposalRegisterDto): Promise<ProposalModel> {
@@ -283,6 +289,19 @@ export class ProposalService {
     return result;
   }
 
+  async updateAcceptReviewer(_id: string, dto: ProposalReviewerAcceptUpdateDto, userId:string): Promise<ProposalModel> {
+    const item = await this._proposalRepository.getById(_id);
+    if (!item) {
+      throw new BadRequestException("Proposta não encontrada!");
+    }
+    const result = await this._proposalRepository.updateAcceptReviewer(_id, dto);
+
+    if (result.association_accept && result.reviewer_accept) {
+      return await this.acceptProposal(result._id.toString(), userId);
+    }
+    return result;
+  }
+
   async refusedProposal(
     proposalId: string,
     refusedById: string,
@@ -326,7 +345,7 @@ export class ProposalService {
   async acceptProposal(
     proposalId: string,
     acceptById: string,
-    dto: ProposalNotificationInterface
+    dto?: ProposalNotificationInterface
   ): Promise<ProposalModel> {
     const acceptBy = await this._userRepository.getById(acceptById);
     let obj: ProposalAcceptedRequestDto = {
@@ -377,14 +396,12 @@ export class ProposalService {
         association_accept: false,
         supplier_accept: false,
         status: ContractStatusEnum.aguardando_assinaturas,
-        proposal_id: proposal,
+        proposal_id: [proposal],
         association_id: bid._id,
         supplier_id: proposal.proposedBy.supplier._id,
       };
 
       await this._bidRepository.changeStatus(proposal.bid._id, { status: BidStatusEnum["completed"] });
-
-      const responseContract = await this._contractRepository.register(contractDto);
 
       for (let iterator of proposal.allotment) {
         const proposalSave = await this._proposalRepository.getById(proposalId);
@@ -396,7 +413,11 @@ export class ProposalService {
         const teste = await this._allotmentRepository.register(iterator as any);
       }
 
-      return await this._proposalRepository.acceptForRevisorProposal(proposalId, obj);
+      const result = await this._proposalRepository.acceptForRevisorProposal(proposalId, obj);
+
+      const responseContract = await this._contractService.register(contractDto);
+
+      return result;
     }
   }
 
@@ -459,8 +480,7 @@ export class ProposalService {
 
   async listByBid(bidId: string): Promise<ProposalGetByBidResponseDto> {
     const proposals = await this._proposalRepository.listByBid(bidId);
-    const bid = await this._bidRepository.getById(bidId);
-
+    const bid = await this._bidService.getById(bidId);
     return new ProposalGetByBidResponseDto(proposals, bid);
   }
 
@@ -591,13 +611,13 @@ export class ProposalService {
     for (let iterator of allotment) {
       const array = newAllotmentProposal
         .filter(el => el.allomentId === iterator._id.toString())
-        .map(item => {return {proposal:item.proposal, proposalWin: item.proposalWin}});
-        
+        .map(item => {
+          return { proposal: item.proposal, proposalWin: item.proposalWin };
+        });
+
       await this._allotmentRepository.addProposal(iterator._id, array);
     }
 
     return newProposal;
   }
 }
-
-

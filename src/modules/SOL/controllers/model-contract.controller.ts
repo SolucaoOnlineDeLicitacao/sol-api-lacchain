@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Put, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/shared/guards/jwt-auth.guard";
 import { ResponseDto } from "src/shared/dtos/response.dto";
@@ -10,6 +10,7 @@ import { ModelContractService } from "../services/model-contract.service";
 import { ModelContractUpdateDto } from "../dtos/model-contract-update-request.dto";
 import { ModelContractStatusEnum } from "../enums/model-contract-status.enum";
 import { BidService } from "../services/bid.service";
+import { AnyFilesInterceptor, FileInterceptor } from "@nestjs/platform-express";
 
 @ApiTags('model-contract')
 @Controller('model-contract')
@@ -27,14 +28,15 @@ export class ModelContractController {
     @UseGuards(JwtAuthGuard, FuncoesGuard)
     @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
     @ApiBearerAuth()
+    @UseInterceptors(FileInterceptor('file'))
     async register(
+        @UploadedFile() file: Express.Multer.File,
         @Body() dto: ModelContractRegisterDto,
     ) {
 
-        try {
-          
+        try {            
             dto.status = ModelContractStatusEnum.ativo;
-            const response = await this.modelContractService.register(dto);
+            const response = await this.modelContractService.register(dto, file);
 
             return new ResponseDto(
                 true,
@@ -143,16 +145,18 @@ export class ModelContractController {
     @HttpCode(200)
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
+    @UseInterceptors(FileInterceptor('file'))
     async updateStatus(
         @Param('_id') _id: string,
         @Body() dto: ModelContractUpdateDto,
+        @UploadedFile() file: Express.Multer.File,
     ) {
 
         try {
          
             dto.status = ModelContractStatusEnum.ativo;
            
-            const response = await this.modelContractService.update(_id, dto);
+            const response = await this.modelContractService.update(_id, dto,file);
 
             return new ResponseDto(
                 true,

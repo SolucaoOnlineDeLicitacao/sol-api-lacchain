@@ -5,6 +5,7 @@ export class AuthenticateResponseDto {
         public id: string,
         public token: string,
         public refreshToken: string,
-        public type: string
+        public type: string,
+        public roles: string
     ) { }
 }

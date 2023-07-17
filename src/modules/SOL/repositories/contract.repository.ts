@@ -11,13 +11,18 @@ import { BidStatusEnum } from "../enums/bid-status.enum";
 
 @Injectable()
 export class ContractRepository {
-  constructor(@InjectModel(Contract.name) private readonly _model: Model<ContractModel>) { }
+  constructor(@InjectModel(Contract.name) private readonly _model: Model<ContractModel>) {}
 
   async register(dto: ContractRegisterDto): Promise<ContractModel> {
     const data = await new this._model(dto);
     const saveResult = await data.save();
     await this._model.findOneAndUpdate({ _id: saveResult._id }, { $inc: { sequencial_number: 1 } }, { new: true });
     return saveResult;
+  }
+
+  async addProposal(dto: ContractModel): Promise<ContractModel> {
+    const data = await new this._model(dto);
+    return await data.save();
   }
 
   async updateStatus(_id: string, dto: ContractUpdateDto): Promise<ContractModel> {
@@ -91,18 +96,18 @@ export class ContractRepository {
       .populate({ path: "bid_number", populate: { path: "agreement" } })
       .populate("association_id")
       .populate("supplier_id")
-      .populate('proposal_id');
+      .populate("proposal_id");
   }
 
   async listBidStatusCompleted(): Promise<ContractModel[]> {
     let teste = await this._model
-      .find({ 'bid_number.status': BidStatusEnum.completed })
+      .find({ "bid_number.status": BidStatusEnum.completed })
       .populate("bid_number")
       .populate({ path: "bid_number", populate: { path: "agreement" } })
       .populate("association_id")
       .populate("supplier_id")
-      .populate('proposal_id');
-    return teste
+      .populate("proposal_id");
+    return teste;
   }
 
   async listNonDeleted(): Promise<ContractModel[]> {
@@ -112,27 +117,37 @@ export class ContractRepository {
       .populate({ path: "bid_number", populate: { path: "agreement" } })
       .populate("association_id")
       .populate("supplier_id")
-      .populate('proposal_id');
+      .populate("proposal_id");
   }
 
   async getById(_id: string): Promise<ContractModel> {
     return await this._model
       .findOne({ _id })
       .populate("bid_number")
-      .populate({ path: "bid_number", populate: [{ path: "agreement" }, { path: "add_allotment" }, { path: 'association' }] })
+      .populate({
+        path: "bid_number",
+        populate: [
+          { path: "agreement" },
+          { path: "add_allotment" },
+          { path: "association", populate: [{ path: "association" }] },
+        ],
+      })
       .populate("association_id")
       .populate("supplier_id")
-      .populate({ path: "proposal_id", populate: [{ path: "allotment" }] })
+      .populate({ path: "proposal_id", populate: [{ path: "allotment" }] });
   }
 
   async getByBidId(_id: string): Promise<ContractModel[]> {
     return await this._model
       .find({ bid_number: _id })
       .populate("bid_number")
-      .populate({ path: "bid_number", populate: [{ path: "agreement" }, { path: "add_allotment" }, { path: 'association' }] })
+      .populate({
+        path: "bid_number",
+        populate: [{ path: "agreement" }, { path: "add_allotment" }, { path: "association" }],
+      })
       .populate("association_id")
       .populate("supplier_id")
-      .populate('proposal_id');
+      .populate("proposal_id");
   }
 
   async deleteById(_id: string) {
@@ -154,6 +169,18 @@ export class ContractRepository {
         $set: {
           status: dto.status,
           items_received: dto.items_received,
+        },
+      }
+    );
+  }
+
+  async updateValueAndProposal(_id: string, dto: { value: string; proposal: any[] }): Promise<ContractModel> {
+    return await this._model.findOneAndUpdate(
+      { _id },
+      {
+        $set: {
+          value: dto.value,
+          proposal_id: dto.proposal,
         },
       }
     );

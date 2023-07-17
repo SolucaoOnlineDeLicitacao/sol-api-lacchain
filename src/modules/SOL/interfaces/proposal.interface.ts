@@ -17,6 +17,7 @@ export interface ProposalInterface {
 
     readonly association_accept: boolean;
     readonly supplier_accept: boolean;
+    readonly reviewer_accept: boolean;
     readonly proposalWin: boolean;
     readonly refusedBecaused: string;
     readonly refusedBy: UserModel;

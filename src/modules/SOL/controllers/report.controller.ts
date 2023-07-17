@@ -13,72 +13,90 @@ import { JwtPayload } from "src/shared/interfaces/jwt-payload.interface";
 @ApiTags("report")
 @Controller("report")
 export class ReportController {
-    private readonly _logger = new Logger(ReportController.name);
+  private readonly _logger = new Logger(ReportController.name);
 
-    constructor(private _reportService: ReportService) { }
+  constructor(private _reportService: ReportService) { }
 
-    @Get()
-    @HttpCode(200)
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard, FuncoesGuard)
-    @Funcoes(UserTypeEnum.administrador)
-    async get() {
-        try {
-            const response = await this._reportService.getDataContract();
+  @Get()
+  @HttpCode(200)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, FuncoesGuard)
+  @Funcoes(UserTypeEnum.administrador)
+  async get() {
+    try {
+      const response = await this._reportService.getDataContract();
 
-            return new ResponseDto(true, response, null);
-        } catch (error) {
-            throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
-        }
+      return new ResponseDto(true, response, null);
+    } catch (error) {
+      throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
     }
+  }
 
-    @Get('report-generated')
-    @HttpCode(200)
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard, FuncoesGuard)
-    @Funcoes(UserTypeEnum.administrador)
-    async getReportGenerated() {
-        try {
-            const response = await this._reportService.getReportGenerated();
+  @Get('report-generated')
+  @HttpCode(200)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, FuncoesGuard)
+  @Funcoes(UserTypeEnum.administrador)
+  async getReportGenerated() {
+    try {
+      const response = await this._reportService.getReportGenerated();
 
-            return new ResponseDto(true, response, null);
-        } catch (error) {
-            throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
-        }
+      return new ResponseDto(true, response, null);
+    } catch (error) {
+      throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
     }
+  }
 
-    @Get('download-data/:type')
-    @HttpCode(200)
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard, FuncoesGuard)
-    @Funcoes(UserTypeEnum.administrador)
-    async generateExcel(
-        @Res() res: Response,
-        @Param('type') type: string,
-        @Req() request,
-        ): Promise<void> {
-        try {
-    
-          const payload: JwtPayload = request.user;
+  @Get('download-data/:type')
+  @HttpCode(200)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, FuncoesGuard)
+  @Funcoes(UserTypeEnum.administrador)
+  async generateExcel(
+    @Res() res: Response,
+    @Param('type') type: string,
+    @Req() request,
+  ): Promise<void> {
+    try {
 
-          const filePath = await this._reportService.getSpreadsheet(type, payload.userId);
-          const absolutePath = path.resolve(filePath);
-    
-          res.setHeader('Content-Disposition', 'attachment; filename=report.xlsx');
-          res.sendFile(absolutePath, {}, (err) => {
-            if (err) {
-              throw err;
-            }
-    
-            fs.unlinkSync(filePath); // Remover o arquivo após o envio
-          });
-        } catch (error) {
-          throw new HttpException(
-            {
-              message: error.message,
-            },
-            HttpStatus.BAD_REQUEST,
-          );
+      const payload: JwtPayload = request.user;
+
+      const filePath = await this._reportService.getSpreadsheet(type, payload.userId);
+      const absolutePath = path.resolve(filePath);
+
+      res.setHeader('Content-Disposition', 'attachment; filename=report.xlsx');
+      res.sendFile(absolutePath, {}, (err) => {
+        if (err) {
+          throw err;
         }
-      }
+
+        fs.unlinkSync(filePath); // Remover o arquivo após o envio
+      });
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get('download-report/:_id')
+  @HttpCode(200)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, FuncoesGuard)
+  @Funcoes(UserTypeEnum.administrador)
+  async donwloadArchive(
+    @Param('_id') _id: string
+  ) {
+    try {
+      const response = await this._reportService.downloadReportGeneratedById(_id);
+
+      return new ResponseDto(true, response, null);
+    } catch (error) {
+      throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);
+    }
+  }
+
 }

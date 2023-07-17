@@ -24,7 +24,7 @@ export class Bids {
   @Prop({ required: true, type: String })
   classification: string;
 
-  @Prop({ required: true, type: String })
+  @Prop({ required: false, type: String })
   start_at: string;
 
   @Prop({ required: true, type: String })
@@ -57,6 +57,9 @@ export class Bids {
   @Prop({ required: false, type: String })
   aditional_site: string;
 
+  @Prop({ required: false, type: String })
+  declined_reason: string;
+
   @Prop({ required: false, type: [{ type: mongoose.Schema.Types.ObjectId, ref: Allotment.name }], remove: true })
   add_allotment: Allotment[];
 
@@ -68,6 +71,12 @@ export class Bids {
 
   @Prop({ required: false, type: String})
   ataFile: string;
+
+  @Prop({ required: false, type: String})
+  state: string;
+
+  @Prop({ required: false, type: String})
+  city: string;
 
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: User.name})
   association: User;

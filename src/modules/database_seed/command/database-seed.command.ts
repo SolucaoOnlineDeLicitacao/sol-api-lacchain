@@ -68,7 +68,6 @@ export class DatabaseSeedCommand {
                 document: '1111111110',
                 office: 'admin1',
                 association: association._id,
-                supplier: '',
                 roles: UserRolesEnum.geral,
                 type: UserTypeEnum.administrador,
                 status: UserStatusEnum.inactive,

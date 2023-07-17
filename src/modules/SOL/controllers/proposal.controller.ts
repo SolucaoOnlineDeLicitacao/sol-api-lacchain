@@ -16,6 +16,7 @@ import { ProposalRefusedRequestDto } from "../dtos/proposal-refused-request.dto"
 import { ProposalNotificationInterface } from "../interfaces/proposal-notification-dto";
 import { ProposalUpdateValues } from "../dtos/proposal-update-values-request.dto";
 import { BidService } from "../services/bid.service";
+import { ProposalReviewerAcceptUpdateDto } from "../dtos/proposal-accept-reviewer-update.dto";
 
 @ApiTags('proposal')
 @Controller('proposal')
@@ -93,8 +94,8 @@ export class ProposalController {
 
     @Get('get-by-id/:_id')
     @HttpCode(200)
-    @UseGuards(JwtAuthGuard)
-    // @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
+   @UseGuards(JwtAuthGuard)
+    @Funcoes(UserTypeEnum.administrador, UserTypeEnum.associacao)
     @ApiBearerAuth()
     async getById(
         @Param('_id') _id: string,
@@ -133,6 +134,7 @@ export class ProposalController {
         try {
 
             const response = await this.proposalService.listByBid(_id);
+
 
             return new ResponseDto(
                 true,
@@ -292,6 +294,38 @@ export class ProposalController {
         try {
 
             const response = await this.proposalService.updateAcceptAssociation(_id, dto);
+
+            return new ResponseDto(
+                true,
+                response,
+                null,
+            );
+
+
+        } catch (error) {
+            this.logger.error(error.message);
+
+            throw new HttpException(
+                new ResponseDto(false, null, [error.message]),
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+    }
+
+    @Put('update-accept-reviwer/:_id')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard, FuncoesGuard)
+    @Funcoes(UserTypeEnum.administrador)
+    @ApiBearerAuth()
+    async updateAcceptReviewer(
+        @Param('_id') _id: string,
+        @Body() dto: ProposalReviewerAcceptUpdateDto,
+        @Req() request,
+    ) {
+
+        try {
+
+            const response = await this.proposalService.updateAcceptReviewer(_id, dto, request.user.userId);
 
             return new ResponseDto(
                 true,

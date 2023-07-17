@@ -18,6 +18,9 @@ export class Proposal {
     @Prop({ required: true, type: Boolean, default: false })
     supplier_accept: boolean;
 
+    @Prop({ required: true, type: Boolean, default: false })
+    reviewer_accept: boolean;
+
     @Prop({ required: true, enum: Object.keys(ProposalStatusEnum), default: ProposalStatusEnum.aguardando1 })
     status: ProposalStatusEnum;
 

@@ -127,7 +127,8 @@ export class AuthenticationService {
       user.id,
       accessToken.accessToken,
       refreshToken.accessToken,
-      user.type
+      user.type,
+      user.roles
     );
   }
 

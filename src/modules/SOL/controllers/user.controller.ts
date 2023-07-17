@@ -100,8 +100,8 @@ export class UserController {
 
   @Get('get-by-id/:_id')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth()
   async getById(
     @Param('_id') _id: string,
   ) {

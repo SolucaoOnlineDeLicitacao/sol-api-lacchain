@@ -9,13 +9,13 @@ export interface AllotmentInterface {
     readonly days_to_delivery: string;
 
     readonly place_to_delivery: string;
-    
-    readonly status: AllotmentStatusEnum ;
+
+    readonly status: AllotmentStatusEnum;
 
     readonly quantity: string;
     readonly files: string;
     readonly add_item: Items[];
     proposals: ProposalInAllotmentInterface[];
-   
+
 
 }

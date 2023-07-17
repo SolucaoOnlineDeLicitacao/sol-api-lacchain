@@ -50,6 +50,7 @@ export class BidRepository {
         $set: {
           status: dto.status,
           proofreader: dto.proofreader,
+          declined_reason: dto.declined_reason,
         },
       },
       { new: true }
@@ -86,11 +87,15 @@ export class BidRepository {
       .populate("agreement")
       .populate("invited_suppliers")
       .populate("add_allotment")
-      .populate("association");
+      .populate("association")
+      .populate("add_allotment.proposals");
   }
 
   async listNonDeletedBids(): Promise<BidModel[]> {
     return await this._model.find({ deleted: false }).populate("agreement").populate("association");
+  }
+  async listBidByStatus(status: BidStatusEnum): Promise<BidModel[]> {
+    return await this._model.find({ status: BidStatusEnum[status] });
   }
 
   async listForDashboard(): Promise<BidModel[]> {
@@ -103,7 +108,8 @@ export class BidRepository {
       .populate("add_allotment")
       .populate("agreement")
       .populate("invited_suppliers")
-      .populate("association");
+      .populate("association")
+      .populate("add_allotment.proposals.proposedBy");
   }
 
   async getById(_id: string): Promise<BidModel> {
@@ -127,6 +133,14 @@ export class BidRepository {
 
   async rotineStatus(_id: string, status: string) {
     return await this._model.findByIdAndUpdate({ _id }, { $set: { status: status } }, { new: true });
+  }
+
+  async addStartHour(_id: string, hour: string) {
+    const ele = await this._model.findByIdAndUpdate({ _id }, { $set: { start_at: hour } }, { new: true });
+    return ele;
+  }
+  async addEndHour(_id: string, hour: string) {
+    return await this._model.findByIdAndUpdate({ _id }, { $set: { end_at: hour } }, { new: true });
   }
 
   async listForSupplier(_id: string): Promise<BidModel[]> {
@@ -171,7 +185,7 @@ export class BidRepository {
       .populate("invited_suppliers");
   }
 
-  async sendTieBreaker(_id: string, suppliers:SupplierModel[]): Promise<BidModel> {
+  async sendTieBreaker(_id: string, suppliers: SupplierModel[]): Promise<BidModel> {
     return await this._model.findOneAndUpdate(
       { _id },
       {
@@ -182,5 +196,11 @@ export class BidRepository {
       },
       { new: true }
     );
+  }
+
+  async listWithoutConcluded(): Promise<BidModel[]> {
+    return await this._model.find({
+      $and: [{ status: { $ne: BidStatusEnum.completed } }, { status: { $ne: BidStatusEnum.deserted } }],
+    });
   }
 }

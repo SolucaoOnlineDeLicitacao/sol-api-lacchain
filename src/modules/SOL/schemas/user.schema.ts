@@ -42,9 +42,6 @@ export class User {
 
     @Prop({ required: false, type:mongoose.Schema.Types.ObjectId, ref: Supplier.name})
     supplier: Supplier;
-    
-    // @Prop({ required: false })
-    // supplier: string;
 
     @Prop({ required: false, enum: Object.keys(UserRolesEnum) })
     roles: UserRolesEnum;

@@ -9,5 +9,6 @@ export enum BidStatusEnum {
     reopened = 'reopened',
     failed = 'failed',
     canceled = 'canceled',
-    tiebreaker = 'tiebreaker'
+    tiebreaker = 'tiebreaker',
+    returned = 'returned'
 }

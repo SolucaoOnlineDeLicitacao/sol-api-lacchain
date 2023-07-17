@@ -43,4 +43,8 @@ export class ProductRepository {
         return await this._model.findByIdAndDelete({ _id });
     }
 
+    async getByName(product_name: string): Promise<ProductModel> {
+        return await this._model.findOne({ product_name });
+    }
+
 }
