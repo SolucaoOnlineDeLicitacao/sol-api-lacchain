@@ -25,7 +25,7 @@ import * as moment from "moment";
 import { text } from "aws-sdk/clients/customerprofiles";
 import { BidDateUpdateDto } from "../dtos/bid-date-update.dto";
 import { PlataformRepository } from "../repositories/plataform.repository";
-
+import { platform } from 'node:process';
 import { UserTypeEnum } from "../enums/user-type.enum";
 
 import { parseISO, isAfter } from "date-fns";
@@ -37,6 +37,7 @@ const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
 const fs = require("fs");
 const path = require("path");
+const { spawn } = require("child_process");
 
 @Injectable()
 export class BidService {
@@ -749,7 +750,16 @@ export class BidService {
 
     // await this.convertDocToPdf("src/shared/documents/output.docx", "src/shared/documents/output.pdf");
 
-    return buf;
+    await this.callPythonFile()
+      .then(async () => {
+        fs.unlinkSync(path.resolve("src/shared/documents", "output.docx"));
+
+        return;
+      })
+      .catch(err => {
+        console.log(err);
+        throw new BadRequestException("Erro ao converter o arquivo, verifique se o python está instalado e se o caminho está correto");
+      });
   }
 
   private async costItensGet(allotment: AllotmentModel[]): Promise<any[]> {
@@ -770,5 +780,41 @@ export class BidService {
     }
 
     return listOfItems;
+  }
+
+  private async callPythonFile() {
+    return new Promise((resolve, reject): void => {
+      if(!fs.existsSync(path.resolve("src/shared/documents", "output.docx"))) {
+        reject("Arquivo não encontrado");
+      }
+      const py = platform === "win32" ? "python" : "python3";
+      const soft = platform === "win32" ? "win32" : "linux";
+      const python = spawn(py, [
+        path.resolve("src/shared/documents", "convertPDF.py"),
+        path.resolve("src/shared/documents", "output.docx"),
+        path.resolve("src/shared/documents", "output.pdf"),
+        soft,
+      ]);
+      python.stdout.on("data", data => {
+        console.log(`stdout: ${data}`);
+      });
+
+      python.stderr.on("data", data => {
+        console.error(`stderr: ${data}`);
+      });
+
+      python.on("close", code => {
+        console.log(`child process exited with code ${code}`);
+        if (code === 0) {
+          resolve(0);
+        }
+        reject(1);
+      });
+
+      python.on("error", err => {
+        console.error(err);
+        reject(err);
+      });
+    });
   }
 }

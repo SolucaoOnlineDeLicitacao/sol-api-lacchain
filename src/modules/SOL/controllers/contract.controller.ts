@@ -24,7 +24,8 @@ import { UserTypeEnum } from "../enums/user-type.enum";
 import { Funcoes } from "src/shared/decorators/function.decorator";
 import { ContractUpdateStatusItemDto } from "../dtos/contract-update-status-item-request.dto";
 import { Response } from "express";
-import { CreateDocumentRequestDto } from "../dtos/create-document-request.dto";
+const path = require("path");
+import * as fs from "fs";
 
 @ApiTags("contract")
 @Controller("contract")
@@ -205,13 +206,14 @@ export class ContractController {
     @Res() res: Response
   ) {
     try {
-      const buf = await this.contractService.createDocument(_id, language, type as any);
-      res.send(buf);
-      // return new ResponseDto(
-      //     true,
-      //     buf,
-      //     null,
-      // );
+      await this.contractService.createDocument(_id, language, type as any);
+      res.sendFile(path.resolve("src/shared/documents", "output.pdf"), {}, (err) => {
+        if (err) {
+          throw new HttpException(new ResponseDto(false, null, [err.message]), HttpStatus.BAD_REQUEST);
+        }
+        fs.unlinkSync(path.resolve("src/shared/documents", "output.pdf"));
+      });
+
     } catch (error) {
       this.logger.error(error.message);
       throw new HttpException(new ResponseDto(false, null, [error.message]), HttpStatus.BAD_REQUEST);

@@ -54,7 +54,8 @@ export class ModelContractService {
                 throw new BadRequestException('Já existe um modelo de contrato cadastrado com essas informações!');
         }
 
-        await fs.unlinkSync(path.resolve("src/shared/documents", dto.contract));
+        if(fs.existsSync(path.resolve("src/shared/documents", dto.contract)))
+            await fs.unlinkSync(path.resolve("src/shared/documents", dto.contract));
 
         await fs.writeFileSync(path.resolve("src/shared/documents", file.originalname), file.buffer);
 

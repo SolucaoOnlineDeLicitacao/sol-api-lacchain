@@ -18,13 +18,16 @@ import { WorkPlanService } from "./work-plan.service";
 import { MutableObject } from "src/shared/interfaces/mutable-object.interface";
 import { AllotmentModel } from "../models/allotment.model";
 import { CostItemsService } from "./cost-items.service";
-// import { PDFDocument, StandardFonts } from "pdf-lib";
+import { platform } from 'node:process';
 import { LanguageContractEnum } from "../enums/language-contract.enum";
 import { ModelContractClassificationEnum } from "../enums/modelContract-classification.enum";
+// import * as docxConverter from 'docx-pdf';
+// import * as temp from 'temp';
 const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
 const fs = require("fs");
 const path = require("path");
+const { spawn } = require("child_process");
 
 @Injectable()
 export class ContractService {
@@ -48,7 +51,9 @@ export class ContractService {
     const count: MutableObject<ContractModel>[] = await this._contractRepository.list();
 
     const incrementProposal = count.find(
-      x => x.bid_number._id.toString() === dto.bid_number.toString() && x.supplier_id._id.toString() === dto.supplier_id.toString()
+      x =>
+        x.bid_number._id.toString() === dto.bid_number.toString() &&
+        x.supplier_id._id.toString() === dto.supplier_id.toString()
     );
 
     if (incrementProposal) {
@@ -597,7 +602,8 @@ export class ContractService {
       role_supplier: "",
       contract_value: contract.value,
       batch_list_name: listOfItems.map(item => item.name).toString(),
-      agreement_name:contract.bid_number.agreement.register_number+'/'+contract.bid_number.agreement.register_object,
+      agreement_name:
+        contract.bid_number.agreement.register_number + "/" + contract.bid_number.agreement.register_object,
     });
 
     // const buf = doc.getZip().generate({ type: "nodebuffer" });
@@ -607,7 +613,23 @@ export class ContractService {
 
     await fs.writeFileSync(path.resolve("src/shared/documents", "output.docx"), buf);
 
-    // await this.convertDocToPdf("src/shared/documents/output.docx", "src/shared/documents/output.pdf");
+    await this.callPythonFile()
+      .then(async () => {
+        // const pdfBuffer = await fs.readFileSync(path.resolve("src/shared/documents", "output.pdf"));
+
+        // fs.unlinkSync(path.resolve("src/shared/documents", "output.pdf"));
+        fs.unlinkSync(path.resolve("src/shared/documents", "output.docx"));
+
+        return;
+      })
+      .catch(err => {
+        console.log(err);
+        throw new BadRequestException("Erro ao converter o arquivo, verifique se o python está instalado e se o caminho está correto");
+      });
+
+    // const pdfBuffer = await this.convertToPDF("src/shared/documents/output.docx");
+
+    // await fs.writeFileSync(path.resolve("src/shared/documents", "output.pdf"), pdfBuffer);
 
     return buf;
   }
@@ -649,55 +671,66 @@ export class ContractService {
     return listOfItems;
   }
 
-  // private async convertDocToPdf(docFilePath: string, pdfFilePath: string): Promise<void> {
-  //   const docFile = fs.readFileSync(docFilePath);
+  // private convertToPDF(filePath: string): Promise<Buffer> {
+  //   return new Promise((resolve, reject) => {
+  //     const pdfPath = temp.path({ suffix: '.pdf' }); // Criação de um arquivo temporário com a extensão .pdf
 
-  //   const pdfDoc = await PDFDocument.create();
+  //     docxConverter(filePath, pdfPath, (err, result) => {
+  //       if (err) {
+  //         console.error('Error during docx-pdf conversion:', err);
+  //         reject(err);
+  //         return;
+  //       }
 
-  //   const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+  //       fs.readFile(pdfPath, (readError, data) => {
+  //         if (readError) {
+  //           console.error('Error reading the PDF file:', readError);
+  //           reject(readError);
+  //           return;
+  //         }
 
-  //   const text = fs.readFileSync(docFilePath, "utf-8");
-  //   const lines = text.split("\n");
+  //         // Removendo o arquivo temporário após a leitura do buffer
+  //         temp.cleanupSync();
 
-  //   const page = pdfDoc.addPage();
-  //   const { width, height } = page.getSize();
-
-  //   const fontSize = 12;
-  //   const lineHeight = fontSize * 1.2;
-
-  //   let y = height - 50;
-
-  //   lines.forEach(line => {
-  //     const textWidth = font.widthOfTextAtSize(line, fontSize);
-  //     const textHeight = font.heightAtSize(fontSize);
-
-  //     if (y - lineHeight < 50) {
-  //       page.drawText("", {
-  //         x: 0,
-  //         y: 50,
+  //         resolve(data);
   //       });
-  //       page.drawText(line, {
-  //         x: textWidth,
-  //         y: height - 50,
-  //         font: font,
-  //         size: fontSize,
-  //       });
-  //     } else {
-  //       page.drawText(line, {
-  //         x: textWidth,
-  //         y: y,
-  //         font: font,
-  //         size: fontSize,
-  //       });
-  //     }
-
-  //     y -= lineHeight;
+  //     });
   //   });
-
-  //   const pdfBytes = await pdfDoc.save();
-
-  //   fs.writeFileSync(pdfFilePath, pdfBytes);
-
-  //   return;
   // }
+
+  private async callPythonFile() {
+    return new Promise((resolve, reject): void => {
+      if(!fs.existsSync(path.resolve("src/shared/documents", "output.docx"))) {
+        reject("Arquivo não encontrado");
+      }
+      const py = platform === "win32" ? "python" : "python3";
+      const soft = platform === "win32" ? "win32" : "linux";
+      const python = spawn(py, [
+        path.resolve("src/shared/documents", "convertPDF.py"),
+        path.resolve("src/shared/documents", "output.docx"),
+        path.resolve("src/shared/documents", "output.pdf"),
+        soft,
+      ]);
+      python.stdout.on("data", data => {
+        console.log(`stdout: ${data}`);
+      });
+
+      python.stderr.on("data", data => {
+        console.error(`stderr: ${data}`);
+      });
+
+      python.on("close", code => {
+        console.log(`child process exited with code ${code}`);
+        if (code === 0) {
+          resolve(0);
+        }
+        reject(1);
+      });
+
+      python.on("error", err => {
+        console.error(err);
+        reject(err);
+      });
+    });
+  }
 }
